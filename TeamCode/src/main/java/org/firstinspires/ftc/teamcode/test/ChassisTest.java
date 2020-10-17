@@ -7,7 +7,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 
 @TeleOp
-public class TeleopTest extends LinearOpMode {
+public class ChassisTest extends LinearOpMode {
     @Override
     public void runOpMode() {
         waitForStart();
@@ -17,14 +17,8 @@ public class TeleopTest extends LinearOpMode {
         DcMotor leftBack = hardwareMap.get(DcMotor.class, "leftBack");
         DcMotor rightFront = hardwareMap.get(DcMotor.class, "rightFront");
         DcMotor rightBack = hardwareMap.get(DcMotor.class, "rightBack");
-        DcMotor frontRight = hardwareMap.get(DcMotor.class, "leftIntake");
-        DcMotor frontLeft = hardwareMap.get(DcMotor.class, "rightIntake");
-
         leftFront.setDirection(DcMotorSimple.Direction.REVERSE);
         leftBack.setDirection(DcMotorSimple.Direction.REVERSE);
-        frontRight.setDirection(DcMotorSimple.Direction.REVERSE);
-        frontLeft.setDirection(DcMotorSimple.Direction.REVERSE);
-
         while (opModeIsActive()) {
             double forwardPower = -gamepad1.left_stick_y;
             double straife = gamepad1.left_stick_x;
@@ -35,15 +29,7 @@ public class TeleopTest extends LinearOpMode {
             rightFront.setPower(forwardPower - straife - turn);
             rightBack.setPower(straife + forwardPower - turn);
 
-            double intakePower;
-            if (gamepad1.right_trigger > 0) {
-                while(gamepad1.right_trigger != 0) {
-                    intakePower = gamepad1.right_trigger;
-                    frontRight.setPower(intakePower);
-                    frontLeft.setPower(intakePower);
 
-                }
-            }
         }
     }
 
