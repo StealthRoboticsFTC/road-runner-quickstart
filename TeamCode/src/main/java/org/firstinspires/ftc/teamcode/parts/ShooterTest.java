@@ -25,9 +25,9 @@ public class ShooterTest extends LinearOpMode {
         flipper.setPosition(0.0);
 
         boolean xIsActivated = false;
+        double shooterPower;
 
         while(opModeIsActive()) {
-            double shooterPower;
 
             while (gamepad1.right_trigger > 0) {
                 shooterPower = gamepad1.right_trigger;
