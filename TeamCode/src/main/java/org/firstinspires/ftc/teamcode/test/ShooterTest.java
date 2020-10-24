@@ -46,7 +46,7 @@ public class ShooterTest extends LinearOpMode {
                 xIsActivated = true;
             }
 
-            else if (gamepad1.x && xIsActivated) {
+            else if (gamepad1.x) {
                 frontShooter.setPower(0);
                 backShooter.setPower(0);
                 xIsActivated = false;
