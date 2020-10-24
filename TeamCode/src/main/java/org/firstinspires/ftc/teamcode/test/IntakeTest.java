@@ -20,13 +20,12 @@ public class IntakeTest extends LinearOpMode {
 
         while(opModeIsActive()) {
             double intakePower;
-                while (gamepad1.left_trigger > 0) {
-                    intakePower = gamepad1.left_trigger;
-                    frontRight.setPower(intakePower);
-                    frontLeft.setPower(intakePower);
+            while (gamepad1.left_trigger > 0) {
+                intakePower = gamepad1.left_trigger;
+                frontRight.setPower(intakePower);
+                frontLeft.setPower(intakePower);
 
-                }
+            }
         }
     }
-
 }
