@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.test;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -19,15 +19,13 @@ public class IntakeTest extends LinearOpMode {
         frontLeft.setDirection(DcMotorSimple.Direction.REVERSE);
 
         while(opModeIsActive()) {
-            double power;
-            if (gamepad1.right_trigger > 0) {
-                while (gamepad1.right_trigger != 0) {
-                    power = gamepad1.right_trigger;
-                    frontRight.setPower(power);
-                    frontLeft.setPower(power);
+            double intakePower;
+                while (gamepad1.left_trigger > 0) {
+                    intakePower = gamepad1.left_trigger;
+                    frontRight.setPower(intakePower);
+                    frontLeft.setPower(intakePower);
 
                 }
-            }
         }
     }
 

@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.test;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -36,9 +36,9 @@ public class TeleopTest extends LinearOpMode {
             rightBack.setPower(straife + forwardPower - turn);
 
             double intakePower;
-            if (gamepad1.right_trigger > 0) {
-                while(gamepad1.right_trigger != 0) {
-                    intakePower = gamepad1.right_trigger;
+            if (gamepad1.left_trigger > 0) {
+                while(gamepad1.left_trigger != 0) {
+                    intakePower = gamepad1.left_trigger;
                     frontRight.setPower(intakePower);
                     frontLeft.setPower(intakePower);
 
