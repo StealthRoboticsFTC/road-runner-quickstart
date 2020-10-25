@@ -34,6 +34,7 @@ public class TeleopTest extends LinearOpMode {
 
         double intakePower;
         boolean xIsActivated = false;
+        boolean powerUp = false;
         double shooterPower;
 
         while (opModeIsActive()) {
@@ -57,14 +58,8 @@ public class TeleopTest extends LinearOpMode {
             }
 
             if (gamepad2.x && ! xIsActivated) {
-                long startingTime = System.currentTimeMillis();
-
-                while(System.currentTimeMillis() - startingTime < MILLIS_BUILD_UP) {
-                    shooterPower = (System.currentTimeMillis() - startingTime) / 10.0;
-                    frontShooter.setPower(shooterPower);
-                    backShooter.setPower(shooterPower);
-                }
                 xIsActivated = true;
+                powerUp = true;
             }
 
             else if (gamepad2.x) {
@@ -72,6 +67,15 @@ public class TeleopTest extends LinearOpMode {
                 backShooter.setPower(0);
                 xIsActivated = false;
             }
+
+            long startingTime = System.currentTimeMillis();
+            if (powerUp && System.currentTimeMillis() - startingTime < MILLIS_BUILD_UP) {
+                shooterPower = (System.currentTimeMillis() - startingTime) / 10.0;
+                frontShooter.setPower(shooterPower);
+                backShooter.setPower(shooterPower);
+            }
+
+            else if (System.currentTimeMillis() - startingTime >= MILLIS_BUILD_UP) powerUp = false;
         }
     }
 
