@@ -4,14 +4,22 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.Servo;
 
 
 @TeleOp
 public class TeleopTest extends LinearOpMode {
 
-    static final double OUT_INTAKE_POWER = -0.6;
+    static final double OUT_INTAKE_POWER = -0.125;
     static final int MILLIS_BUILD_UP = 1000;
+    static final double SHOOTER_ARM_POSITION = 0.5;
     long startingTime;
+    int shooterArmRuns = 0;
+    double intakePower;
+    boolean xIsActivated = false;
+    boolean powerUp = false;
+    double shooterPower;
+    boolean fireShooter = false;
 
     @Override
     public void runOpMode() {
@@ -25,6 +33,7 @@ public class TeleopTest extends LinearOpMode {
         DcMotor frontLeft = hardwareMap.get(DcMotor.class, "rightIntake");
         DcMotor backShooter = hardwareMap.get(DcMotor.class, "backShooter");
         DcMotor frontShooter = hardwareMap.get(DcMotor.class, "frontShooter");
+        Servo shooterArm = hardwareMap.get(Servo.class, "shooterArm");
 
         leftFront.setDirection(DcMotorSimple.Direction.REVERSE);
         leftBack.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -32,11 +41,6 @@ public class TeleopTest extends LinearOpMode {
         frontLeft.setDirection(DcMotorSimple.Direction.REVERSE);
         backShooter.setDirection(DcMotorSimple.Direction.REVERSE);
         frontShooter.setDirection(DcMotorSimple.Direction.REVERSE);
-
-        double intakePower;
-        boolean xIsActivated = false;
-        boolean powerUp = false;
-        double shooterPower;
 
         while (opModeIsActive()) {
             double forwardPower = -gamepad1.left_stick_y;
@@ -70,13 +74,29 @@ public class TeleopTest extends LinearOpMode {
                 xIsActivated = false;
             }
 
-            if (powerUp && System.currentTimeMillis() - startingTime < MILLIS_BUILD_UP) {
-                shooterPower = (System.currentTimeMillis() - startingTime) / 10.0;
+            long timeDifference = System.currentTimeMillis() - startingTime;
+            if (powerUp && timeDifference < MILLIS_BUILD_UP) {
+                shooterPower = timeDifference / 10.0;
                 frontShooter.setPower(shooterPower);
                 backShooter.setPower(shooterPower);
             }
 
             else if (System.currentTimeMillis() - startingTime >= MILLIS_BUILD_UP) powerUp = false;
+
+            if (gamepad2.a) {
+                fireShooter = true;
+            }
+
+            if (shooterArmRuns < 3 && fireShooter) {
+                shooterArm.setPosition(SHOOTER_ARM_POSITION);
+                shooterArm.setPosition(0);
+                shooterArmRuns++;
+            }
+
+            else if (fireShooter) {
+                shooterArmRuns = 0;
+                fireShooter = false;
+            }
         }
     }
 
