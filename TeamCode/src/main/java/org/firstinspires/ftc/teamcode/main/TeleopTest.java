@@ -13,13 +13,6 @@ public class TeleopTest extends LinearOpMode {
     static final double OUT_INTAKE_POWER = -0.125;
     static final int MILLIS_BUILD_UP = 1000;
     static final double SHOOTER_ARM_POSITION = 0.5;
-    long startingTime;
-    int shooterArmRuns = 0;
-    double intakePower;
-    boolean xIsActivated = false;
-    boolean powerUp = false;
-    double shooterPower;
-    boolean fireShooter = false;
 
     @Override
     public void runOpMode() {
@@ -41,6 +34,15 @@ public class TeleopTest extends LinearOpMode {
         frontLeft.setDirection(DcMotorSimple.Direction.REVERSE);
         backShooter.setDirection(DcMotorSimple.Direction.REVERSE);
         frontShooter.setDirection(DcMotorSimple.Direction.REVERSE);
+
+        long startingTime;
+        int shooterArmRuns = 0;
+        double intakePower;
+        boolean xIsActivated = false;
+        boolean powerUp = false;
+        double shooterPower;
+        boolean fireShooter = false;
+        long timeDifference = 0;
 
         while (opModeIsActive()) {
             double forwardPower = -gamepad1.left_stick_y;
@@ -64,6 +66,7 @@ public class TeleopTest extends LinearOpMode {
 
             if (gamepad2.x && ! xIsActivated) {
                 startingTime = System.currentTimeMillis();
+                timeDifference = System.currentTimeMillis() - startingTime;
                 xIsActivated = true;
                 powerUp = true;
             }
@@ -74,14 +77,13 @@ public class TeleopTest extends LinearOpMode {
                 xIsActivated = false;
             }
 
-            long timeDifference = System.currentTimeMillis() - startingTime;
             if (powerUp && timeDifference < MILLIS_BUILD_UP) {
                 shooterPower = timeDifference / 10.0;
                 frontShooter.setPower(shooterPower);
                 backShooter.setPower(shooterPower);
             }
 
-            else if (System.currentTimeMillis() - startingTime >= MILLIS_BUILD_UP) powerUp = false;
+            else if (timeDifference >= MILLIS_BUILD_UP) powerUp = false;
 
             if (gamepad2.a) {
                 fireShooter = true;
