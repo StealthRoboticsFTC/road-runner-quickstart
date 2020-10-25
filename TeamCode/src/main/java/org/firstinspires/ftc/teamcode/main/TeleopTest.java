@@ -11,6 +11,7 @@ public class TeleopTest extends LinearOpMode {
 
     static final double OUT_INTAKE_POWER = -0.6;
     static final int MILLIS_BUILD_UP = 1000;
+    long startingTime;
 
     @Override
     public void runOpMode() {
@@ -58,6 +59,7 @@ public class TeleopTest extends LinearOpMode {
             }
 
             if (gamepad2.x && ! xIsActivated) {
+                startingTime = System.currentTimeMillis();
                 xIsActivated = true;
                 powerUp = true;
             }
@@ -68,7 +70,6 @@ public class TeleopTest extends LinearOpMode {
                 xIsActivated = false;
             }
 
-            long startingTime = System.currentTimeMillis();
             if (powerUp && System.currentTimeMillis() - startingTime < MILLIS_BUILD_UP) {
                 shooterPower = (System.currentTimeMillis() - startingTime) / 10.0;
                 frontShooter.setPower(shooterPower);
