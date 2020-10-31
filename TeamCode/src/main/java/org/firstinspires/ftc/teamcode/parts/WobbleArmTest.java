@@ -4,11 +4,18 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.Servo;
 
+import org.firstinspires.ftc.teamcode.subsystem.WobbleArm;
+
 @TeleOp
-public class WobbleArm extends LinearOpMode {
+public class WobbleArmTest extends LinearOpMode {
+
+
+    private WobbleArm wobbleArm;
 
     @Override
     public void runOpMode() {
+
+        wobbleArm = new WobbleArm(hardwareMap);
 
         Servo arm = hardwareMap.get(Servo.class, "arm");
         Servo pincher = hardwareMap.get(Servo.class, "pincher");
@@ -25,19 +32,20 @@ public class WobbleArm extends LinearOpMode {
         arm.setPosition(0.0);
         while (!isStopRequested()) {
             if (gamepad1.a && !isADown) {
+
                 if (isArmUp){
-                    arm.setPosition(0.0);
-                }else {
-                    arm.setPosition(0.5);
+                    wobbleArm.moveDown();
+                } else {
+                    wobbleArm.moveUp();
                 }
                 isArmUp=!isArmUp;
 
             }
             if (gamepad1.x && !isXDown) {
                 if (isPincherClosed){
-                    pincher.setPosition(0.0);
+                    wobbleArm.gripClose();
                 }else {
-                    pincher.setPosition(0.5);
+                    wobbleArm.gripOpen();
                 }
                 isPincherClosed=!isPincherClosed;
             }
