@@ -23,9 +23,6 @@ public class Shooter {
             Arrays.asList(0.0), Arrays.asList(0.0)
     );
 
-    public Shooter(HardwareMap hardwareMap) {
-    }
-
     enum State {
         OFF,
         RAMP_UP,

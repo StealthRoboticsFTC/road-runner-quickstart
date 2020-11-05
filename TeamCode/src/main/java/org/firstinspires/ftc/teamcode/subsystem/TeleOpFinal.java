@@ -13,13 +13,15 @@ public class TeleOpFinal extends LinearOpMode {
     public void runOpMode() {
 
         wobbleArm = new WobbleArm(hardwareMap);
-        shooter = new Shooter(hardwareMap);
+        // shooter = new Shooter(hardwareMap);
         intake = new Intake(hardwareMap);
 
         waitForStart();
 
         boolean isYDown = false;
         boolean isBDown = false;
+
+        boolean xHasBeenPressed = false;
 
         boolean isRBDown = false;
         boolean isLBDown = false;
@@ -28,13 +30,11 @@ public class TeleOpFinal extends LinearOpMode {
 
         while (!isStopRequested()) {
             if (gamepad1.b && !isYDown) {
-
                 if (!wobbleArm.isArmDown()) {
                     wobbleArm.moveDown();
                 } else {
                     wobbleArm.moveUp();
                 }
-
             }
 
             if (gamepad1.y && !isBDown) {
@@ -44,6 +44,8 @@ public class TeleOpFinal extends LinearOpMode {
                     wobbleArm.gripOpen();
                 }
             }
+
+            if (gamepad2.x)
 
             if (gamepad2.right_bumper && !hasRBBeenPressed && !isLBDown) {
                 intake.startIn();
@@ -63,6 +65,8 @@ public class TeleOpFinal extends LinearOpMode {
 
             isYDown = gamepad1.y;
             isBDown = gamepad1.b;
+
+
 
             isRBDown = gamepad2.right_bumper;
             isLBDown = gamepad2.left_bumper;
