@@ -2,11 +2,13 @@ package org.firstinspires.ftc.teamcode.subsystem;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.Servo;
 
 public class Intake {
 
     private DcMotor leftIntake;
     private DcMotor rightIntake;
+    private Servo vexMotor;
     private HardwareMap hardwareMap;
 
     private static double INTAKE_IN_POWER = 1.0;
@@ -17,6 +19,7 @@ public class Intake {
         this.hardwareMap = hardwareMap;
         this.leftIntake = hardwareMap.get(DcMotor.class, "leftIntake");
         this.rightIntake = hardwareMap.get(DcMotor.class, "rightIntake");
+        this.vexMotor = hardwareMap.get(Servo.class, "vexMotor")
         this.stop();
     }
 

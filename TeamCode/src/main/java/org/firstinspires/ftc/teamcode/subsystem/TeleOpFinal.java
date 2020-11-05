@@ -21,6 +21,11 @@ public class TeleOpFinal extends LinearOpMode {
         boolean isYDown = false;
         boolean isBDown = false;
 
+        boolean isRBDown = false;
+        boolean isLBDown = false;
+        boolean hasRBBeenPressed = false;
+        boolean hasLBBeenPressed = false;
+
         while (!isStopRequested()) {
             if (gamepad1.b && !isYDown) {
 
@@ -40,8 +45,31 @@ public class TeleOpFinal extends LinearOpMode {
                 }
             }
 
+            if (gamepad2.right_bumper && !hasRBBeenPressed && !isLBDown) {
+                intake.startIn();
+                hasRBBeenPressed = true;
+            }
+
+            else if(gamepad2.right_bumper && !isLBDown) {
+                intake.stop();
+                hasRBBeenPressed = false;
+            }
+
+            if (gamepad2.left_bumper && !hasLBBeenPressed && !isRBDown) {
+                intake.startOut();
+                hasLBBeenPressed = true;
+            }
+
+            else if(gamepad2.left_bumper && !isRBDown) {
+                intake.stop();
+                hasLBBeenPressed = false;
+            }
+
             isYDown = gamepad1.y;
             isBDown = gamepad1.b;
+
+            isRBDown = gamepad2.right_bumper;
+            isLBDown = gamepad2.left_bumper;
 
         }
     }
