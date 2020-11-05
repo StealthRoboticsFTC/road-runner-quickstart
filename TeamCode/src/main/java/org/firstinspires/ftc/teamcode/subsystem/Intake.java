@@ -19,23 +19,26 @@ public class Intake {
         this.hardwareMap = hardwareMap;
         this.leftIntake = hardwareMap.get(DcMotor.class, "leftIntake");
         this.rightIntake = hardwareMap.get(DcMotor.class, "rightIntake");
-        this.vexMotor = hardwareMap.get(Servo.class, "vexMotor")
+        this.vexMotor = hardwareMap.get(Servo.class, "vexMotor");
         this.stop();
     }
 
     public void startIn() {
         leftIntake.setPower(INTAKE_IN_POWER);
         rightIntake.setPower(INTAKE_IN_POWER);
+        vexMotor.setDirection(Servo.Direction.REVERSE);
     }
 
     public void startOut() {
         leftIntake.setPower(INTAKE_OUT_POWER);
         rightIntake.setPower(INTAKE_OUT_POWER);
+        vexMotor.setDirection(Servo.Direction.FORWARD);
     }
 
     public void stop() {
         leftIntake.setPower(INTAKE_STOP_POWER);
         rightIntake.setPower(INTAKE_STOP_POWER);
+        vexMotor.setPosition(0.0);
     }
 
 }

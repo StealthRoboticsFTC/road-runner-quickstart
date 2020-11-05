@@ -48,9 +48,7 @@ public class TeleOpFinal extends LinearOpMode {
             if (gamepad2.right_bumper && !hasRBBeenPressed && !isLBDown) {
                 intake.startIn();
                 hasRBBeenPressed = true;
-            }
-
-            else if(gamepad2.right_bumper && !isLBDown) {
+            } else if(gamepad2.right_bumper && !isLBDown) {
                 intake.stop();
                 hasRBBeenPressed = false;
             }
@@ -58,9 +56,7 @@ public class TeleOpFinal extends LinearOpMode {
             if (gamepad2.left_bumper && !hasLBBeenPressed && !isRBDown) {
                 intake.startOut();
                 hasLBBeenPressed = true;
-            }
-
-            else if(gamepad2.left_bumper && !isRBDown) {
+            } else if(gamepad2.left_bumper && !isRBDown) {
                 intake.stop();
                 hasLBBeenPressed = false;
             }
