@@ -66,7 +66,7 @@ public class TeleOpFinal extends LinearOpMode {
                 }
             }
 
-            if (gamepad2.x)
+            // if (gamepad2.x)
 
             if (gamepad2.right_bumper && !hasRBBeenPressed && !isLBDown) {
                 intake.startIn();
