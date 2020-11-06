@@ -11,8 +11,8 @@ public class Intake {
     private CRServo vexMotor;
     private HardwareMap hardwareMap;
 
-    private static double INTAKE_IN_POWER = 1.0;
-    private static double INTAKE_OUT_POWER = -1.0;
+    private static double INTAKE_IN_POWER = -1.0;
+    private static double INTAKE_OUT_POWER = 1.0;
     private static double INTAKE_STOP_POWER = 0.0;
 
     public Intake(HardwareMap hardwareMap) {
@@ -26,13 +26,13 @@ public class Intake {
     public void startIn() {
         leftIntake.setPower(INTAKE_IN_POWER);
         rightIntake.setPower(INTAKE_IN_POWER);
-        vexMotor.setPower(INTAKE_IN_POWER);
+        vexMotor.setPower(-INTAKE_IN_POWER);
     }
 
     public void startOut() {
         leftIntake.setPower(INTAKE_OUT_POWER);
         rightIntake.setPower(INTAKE_OUT_POWER);
-        vexMotor.setPower(INTAKE_OUT_POWER);
+        vexMotor.setPower(-INTAKE_OUT_POWER);
     }
 
     public void stop() {
