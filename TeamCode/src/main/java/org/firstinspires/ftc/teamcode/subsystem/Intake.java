@@ -5,7 +5,6 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
 public class Intake {
-
     private DcMotor leftIntake;
     private DcMotor rightIntake;
     private Servo vexMotor;
