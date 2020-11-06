@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.subsystem;
 
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -7,7 +8,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 public class Intake {
     private DcMotor leftIntake;
     private DcMotor rightIntake;
-    private Servo vexMotor;
+    private CRServo vexMotor;
     private HardwareMap hardwareMap;
 
     private static double INTAKE_IN_POWER = 1.0;
@@ -18,26 +19,26 @@ public class Intake {
         this.hardwareMap = hardwareMap;
         this.leftIntake = hardwareMap.get(DcMotor.class, "leftIntake");
         this.rightIntake = hardwareMap.get(DcMotor.class, "rightIntake");
-        this.vexMotor = hardwareMap.get(Servo.class, "vexMotor");
+        this.vexMotor = hardwareMap.get(CRServo.class, "vexMotor");
         this.stop();
     }
 
     public void startIn() {
         leftIntake.setPower(INTAKE_IN_POWER);
         rightIntake.setPower(INTAKE_IN_POWER);
-        vexMotor.setDirection(Servo.Direction.REVERSE);
+        vexMotor.setPower(INTAKE_IN_POWER);
     }
 
     public void startOut() {
         leftIntake.setPower(INTAKE_OUT_POWER);
         rightIntake.setPower(INTAKE_OUT_POWER);
-        vexMotor.setDirection(Servo.Direction.FORWARD);
+        vexMotor.setPower(INTAKE_OUT_POWER);
     }
 
     public void stop() {
         leftIntake.setPower(INTAKE_STOP_POWER);
         rightIntake.setPower(INTAKE_STOP_POWER);
-        vexMotor.setPosition(0.0);
+        vexMotor.setPower(INTAKE_STOP_POWER);
     }
 
 }
