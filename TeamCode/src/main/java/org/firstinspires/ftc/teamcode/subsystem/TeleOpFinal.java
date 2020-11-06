@@ -4,11 +4,12 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.Servo;
 
 @TeleOp
 public class TeleOpFinal extends LinearOpMode {
     private WobbleArm wobbleArm;
-    private Shooter shooter;
+    // private Shooter shooter;
     private Intake intake;
 
     @Override
@@ -35,8 +36,6 @@ public class TeleOpFinal extends LinearOpMode {
 
         boolean xHasBeenPressed = false;
 
-        boolean isRBDown = false;
-        boolean isLBDown = false;
         boolean hasRBBeenPressed = false;
         boolean hasLBBeenPressed = false;
 
@@ -68,29 +67,24 @@ public class TeleOpFinal extends LinearOpMode {
 
             // if (gamepad2.x)
 
-            if (gamepad1.right_bumper && !hasRBBeenPressed && !isLBDown && !hasLBBeenPressed) {
+            if (gamepad1.right_bumper && !hasRBBeenPressed && !hasLBBeenPressed) {
                 intake.startIn();
                 hasRBBeenPressed = true;
-            } else if(gamepad1.right_bumper && !isLBDown && !hasLBBeenPressed) {
+            } else if(gamepad1.right_bumper && !hasLBBeenPressed) {
                 intake.stop();
                 hasRBBeenPressed = false;
             }
 
-            if (gamepad1.left_bumper && !hasLBBeenPressed && !isRBDown && !hasRBBeenPressed) {
+            if (gamepad1.left_bumper && !hasLBBeenPressed && !hasRBBeenPressed) {
                 intake.startOut();
                 hasLBBeenPressed = true;
-            } else if(gamepad1.left_bumper && !isRBDown && !hasRBBeenPressed) {
+            } else if(gamepad1.left_bumper && !hasRBBeenPressed) {
                 intake.stop();
                 hasLBBeenPressed = false;
             }
 
             isYDown = gamepad1.y;
             isBDown = gamepad1.b;
-
-
-
-            isRBDown = gamepad1.right_bumper;
-            isLBDown = gamepad1.left_bumper;
 
         }
     }
