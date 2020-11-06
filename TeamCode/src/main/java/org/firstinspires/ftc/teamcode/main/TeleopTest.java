@@ -35,14 +35,14 @@ public class TeleopTest extends LinearOpMode {
         backShooter.setDirection(DcMotorSimple.Direction.REVERSE);
         frontShooter.setDirection(DcMotorSimple.Direction.REVERSE);
 
-        long startingTime;
+        long startingTime = 0;
         int shooterArmRuns = 0;
         double intakePower;
         boolean xIsActivated = false;
         boolean powerUp = false;
         double shooterPower;
         boolean fireShooter = false;
-        long timeDifference = 0;
+        long timeDifference;
 
         while (opModeIsActive()) {
             double forwardPower = -gamepad1.left_stick_y;
@@ -66,7 +66,6 @@ public class TeleopTest extends LinearOpMode {
 
             if (gamepad2.x && ! xIsActivated) {
                 startingTime = System.currentTimeMillis();
-                timeDifference = System.currentTimeMillis() - startingTime;
                 xIsActivated = true;
                 powerUp = true;
             }
@@ -77,6 +76,8 @@ public class TeleopTest extends LinearOpMode {
                 xIsActivated = false;
             }
 
+            timeDifference = System.currentTimeMillis() - startingTime;
+
             if (powerUp && timeDifference < MILLIS_BUILD_UP) {
                 shooterPower = timeDifference / 10.0;
                 frontShooter.setPower(shooterPower);
@@ -84,8 +85,7 @@ public class TeleopTest extends LinearOpMode {
             }
 
             else if (timeDifference >= MILLIS_BUILD_UP) powerUp = false;
-
-            if (gamepad2.a) {
+             if (gamepad2.a) {
                 fireShooter = true;
             }
 
