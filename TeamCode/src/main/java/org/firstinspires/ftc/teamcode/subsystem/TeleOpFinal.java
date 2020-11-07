@@ -54,12 +54,24 @@ public class TeleOpFinal extends LinearOpMode {
             telemetry.addData("y", poseEstimate.getY());
             telemetry.addData("heading", poseEstimate.getHeading());
             telemetry.update();
-
+//TODO determin buttins vs flag
             if (gamepad1.b && !isYDown) {
-                if (!wobbleArm.isArmDown()) {
-                    wobbleArm.moveDown();
-                } else {
-                    wobbleArm.moveUp();
+                //Initial -> carry
+                //Carry -> dropoff
+                //Drop-off -> pickup
+                //Pickup -> carry
+                switch(wobbleArm.getArmPosition()){
+                    case INITIAL:
+                    case PICKUP:
+                        wobbleArm.moveToCarry();
+                        break;
+                    case CARRY:
+                        wobbleArm.moveToDropOff();
+                        break;
+                    case DROPOFF:
+                        wobbleArm.moveToPickup();
+                        break;
+
                 }
             }
 

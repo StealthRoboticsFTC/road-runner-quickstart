@@ -1,10 +1,12 @@
 package org.firstinspires.ftc.teamcode.parts;
 
+import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
+@Config
 
 @TeleOp
 public class IntakeTest extends LinearOpMode {

@@ -1,9 +1,12 @@
 package org.firstinspires.ftc.teamcode.parts;
 
+import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.subsystem.WobbleArm;
+
+@Config
 
 @TeleOp
 public class WobbleArmTest extends LinearOpMode {
@@ -21,24 +24,35 @@ public class WobbleArmTest extends LinearOpMode {
         boolean isXDown=false;
 
         while (!isStopRequested()) {
-            if (gamepad1.a && !isADown) {
+            if (gamepad2.a && !isADown) {
 
-                if (!wobbleArm.isArmDown()){
-                    wobbleArm.moveDown();
-                } else {
-                    wobbleArm.moveUp();
+                //Initial -> carry
+                //Carry -> dropoff
+                //Drop-off -> pickup
+                //Pickup -> carry
+                switch(wobbleArm.getArmPosition()){
+                    case INITIAL:
+                    case PICKUP:
+                        wobbleArm.moveToCarry();
+                        break;
+                    case CARRY:
+                        wobbleArm.moveToDropOff();
+                        break;
+                    case DROPOFF:
+                        wobbleArm.moveToPickup();
+                        break;
+
                 }
-
             }
-            if (gamepad1.x && !isXDown) {
-                if (!wobbleArm.isGripOpen()){
+            if (gamepad2.x && !isXDown) {
+                if (wobbleArm.isGripOpen()){
                     wobbleArm.gripClose();
                 }else {
                     wobbleArm.gripOpen();
                 }
             }
-            isADown=gamepad1.a;
-            isXDown=gamepad1.x;
+            isADown=gamepad2.a;
+            isXDown=gamepad2.x;
         }
     }
 }
