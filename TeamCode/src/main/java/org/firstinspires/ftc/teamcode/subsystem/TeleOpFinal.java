@@ -9,7 +9,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 @TeleOp
 public class TeleOpFinal extends LinearOpMode {
     private WobbleArm wobbleArm;
-    // private Shooter shooter;
+    private Shooter shooter;
     private Intake intake;
 
     @Override
@@ -65,7 +65,19 @@ public class TeleOpFinal extends LinearOpMode {
                 }
             }
 
-            // if (gamepad2.x)
+            if (gamepad1.x && !xHasBeenPressed) {
+                shooter.startRampUp();
+                xHasBeenPressed = true;
+            } else if (gamepad1.x) {
+                shooter.stop();
+                xHasBeenPressed = false;
+            }
+
+            if (gamepad1.a) {
+                shooter.fire();
+            }
+
+            shooter.update();
 
             if (gamepad1.right_bumper && !hasRBBeenPressed && !hasLBBeenPressed) {
                 intake.startIn();
