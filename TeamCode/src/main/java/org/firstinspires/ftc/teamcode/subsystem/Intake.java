@@ -15,6 +15,10 @@ public class Intake {
     private static double INTAKE_OUT_POWER = 1.0;
     private static double INTAKE_STOP_POWER = 0.0;
 
+    private static double INTAKE_VEX_IN_POWER = -0.5;
+    private static double INTAKE_VEX_OUT_POWER = 0.5;
+    private static double INTAKE_VEX_STOP_POWER = 0.0;
+
     public Intake(HardwareMap hardwareMap) {
         this.hardwareMap = hardwareMap;
         this.leftIntake = hardwareMap.get(DcMotor.class, "leftIntake");
@@ -26,19 +30,19 @@ public class Intake {
     public void startIn() {
         leftIntake.setPower(INTAKE_IN_POWER);
         rightIntake.setPower(INTAKE_IN_POWER);
-        vexMotor.setPower(-INTAKE_IN_POWER);
+        vexMotor.setPower(INTAKE_IN_POWER);
     }
 
     public void startOut() {
         leftIntake.setPower(INTAKE_OUT_POWER);
         rightIntake.setPower(INTAKE_OUT_POWER);
-        vexMotor.setPower(-INTAKE_OUT_POWER);
+        vexMotor.setPower(INTAKE_VEX_OUT_POWER);
     }
 
     public void stop() {
         leftIntake.setPower(INTAKE_STOP_POWER);
         rightIntake.setPower(INTAKE_STOP_POWER);
-        vexMotor.setPower(INTAKE_STOP_POWER);
+        vexMotor.setPower(INTAKE_VEX_STOP_POWER);
     }
 
 }
