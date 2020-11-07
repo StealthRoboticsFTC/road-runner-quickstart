@@ -1,32 +1,31 @@
 package org.firstinspires.ftc.teamcode.subsystem;
 
+import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.robotcore.hardware.Servo;
+
+import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 
 @TeleOp
 public class TeleOpFinal extends LinearOpMode {
     private WobbleArm wobbleArm;
-    // private Shooter shooter;
+    private Shooter shooter;
     private Intake intake;
 
     @Override
     public void runOpMode() {
 
         DcMotor leftFront = hardwareMap.get(DcMotor.class, "leftFront");
-        DcMotor leftBack = hardwareMap.get(DcMotor.class, "leftBack");
+        DcMotor leftRear = hardwareMap.get(DcMotor.class, "leftBack");
         DcMotor rightFront = hardwareMap.get(DcMotor.class, "rightFront");
-        DcMotor rightBack = hardwareMap.get(DcMotor.class, "rightBack");
+        DcMotor rightRear = hardwareMap.get(DcMotor.class, "rightBack");
 
-        leftFront.setDirection(DcMotorSimple.Direction.REVERSE);
-        leftBack.setDirection(DcMotorSimple.Direction.REVERSE);
-        rightFront.setDirection(DcMotorSimple.Direction.REVERSE);
-        rightBack.setDirection(DcMotorSimple.Direction.REVERSE);
+        SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
+        drive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         wobbleArm = new WobbleArm(hardwareMap);
-        // shooter = new Shooter(hardwareMap);
+        shooter = new Shooter(hardwareMap, drive);
         intake = new Intake(hardwareMap);
 
         waitForStart();
@@ -40,14 +39,21 @@ public class TeleOpFinal extends LinearOpMode {
         boolean hasLBBeenPressed = false;
 
         while (!isStopRequested()) {
-            double forwardPower = -gamepad1.left_stick_y;
-            double straife = gamepad1.left_stick_x;
-            double turn = gamepad1.right_stick_x;
+            drive.setWeightedDrivePower(
+                    new Pose2d(
+                            -gamepad1.left_stick_y,
+                            -gamepad1.left_stick_x,
+                            -gamepad1.right_stick_x
+                    )
+            );
 
-            leftFront.setPower(forwardPower + straife + turn);
-            leftBack.setPower(forwardPower - straife + turn);
-            rightFront.setPower(forwardPower - straife - turn);
-            rightBack.setPower(straife + forwardPower - turn);
+            drive.update();
+
+            Pose2d poseEstimate = drive.getPoseEstimate();
+            telemetry.addData("x", poseEstimate.getX());
+            telemetry.addData("y", poseEstimate.getY());
+            telemetry.addData("heading", poseEstimate.getHeading());
+            telemetry.update();
 
             if (gamepad1.b && !isYDown) {
                 if (!wobbleArm.isArmDown()) {
@@ -65,7 +71,19 @@ public class TeleOpFinal extends LinearOpMode {
                 }
             }
 
-            // if (gamepad2.x)
+            if (gamepad1.x && !xHasBeenPressed) {
+                shooter.startRampUp();
+                xHasBeenPressed = true;
+            } else if (gamepad1.x) {
+                shooter.stop();
+                xHasBeenPressed = false;
+            }
+
+            if (gamepad1.a) {
+                shooter.fire();
+            }
+
+            shooter.update();
 
             if (gamepad1.right_bumper && !hasRBBeenPressed && !hasLBBeenPressed) {
                 intake.startIn();
