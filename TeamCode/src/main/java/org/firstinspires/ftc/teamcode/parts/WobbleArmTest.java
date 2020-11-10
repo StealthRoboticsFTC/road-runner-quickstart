@@ -12,6 +12,7 @@ import org.firstinspires.ftc.teamcode.subsystem.WobbleArm;
 public class WobbleArmTest extends LinearOpMode {
 
     private WobbleArm wobbleArm;
+    public static int AP = -1;
 
     @Override
     public void runOpMode() {
@@ -24,8 +25,9 @@ public class WobbleArmTest extends LinearOpMode {
         boolean isXDown=false;
 
         while (!isStopRequested()) {
-            if (gamepad2.a && !isADown) {
+            if (gamepad1.a && !isADown) {
 
+                AP = wobbleArm.getArmPosition().ordinal();
                 //Initial -> carry
                 //Carry -> dropoff
                 //Drop-off -> pickup
@@ -44,15 +46,15 @@ public class WobbleArmTest extends LinearOpMode {
 
                 }
             }
-            if (gamepad2.x && !isXDown) {
+            if (gamepad1.x && !isXDown) {
                 if (wobbleArm.isGripOpen()){
                     wobbleArm.gripClose();
                 }else {
                     wobbleArm.gripOpen();
                 }
             }
-            isADown=gamepad2.a;
-            isXDown=gamepad2.x;
+            isADown=gamepad1.a;
+            isXDown=gamepad1.x;
         }
     }
 }

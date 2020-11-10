@@ -24,8 +24,9 @@ public class WobbleArm {
     protected Servo arm;
     protected Servo pincher;
     private HardwareMap hardwareMap;
-    private ArmPosition armPosition;
+    public static ArmPosition armPosition;
     private boolean gripOpen;
+    public static double DEBUG_ARM_POSITION = 0.0;
 
     private WobbleArm(){}
 
@@ -39,21 +40,25 @@ public class WobbleArm {
 
     public void moveToInitial() {
         arm.setPosition(ARM_INITIAL_POSITION);
+        DEBUG_ARM_POSITION= ARM_INITIAL_POSITION;
         armPosition = ArmPosition.INITIAL;
     }
 
     public void moveToCarry() {
         arm.setPosition(ARM_CARRY_POSITION);
+        DEBUG_ARM_POSITION= ARM_CARRY_POSITION;
         armPosition = ArmPosition.CARRY;
     }
 
     public void moveToDropOff() {
         arm.setPosition(ARM_DROPOFF_POSITION);
+        DEBUG_ARM_POSITION= ARM_DROPOFF_POSITION;
         armPosition = ArmPosition.DROPOFF;
     }
 
     public void moveToPickup() {
         arm.setPosition(ARM_PICKUP_POSITION);
+        DEBUG_ARM_POSITION= ARM_PICKUP_POSITION;
         armPosition = ArmPosition.PICKUP;
     }
 
