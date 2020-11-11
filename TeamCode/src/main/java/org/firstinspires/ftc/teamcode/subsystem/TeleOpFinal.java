@@ -30,10 +30,10 @@ public class TeleOpFinal extends LinearOpMode {
 
         waitForStart();
 
-        boolean isYDown = false;
-        boolean isBDown = false;
+        boolean isXButtonDown = false;
+        boolean isAButtonDown = false;
 
-        boolean xHasBeenPressed = false;
+        boolean yHasBeenPressed = false;
 
         boolean hasRBBeenPressed = false;
         boolean hasLBBeenPressed = false;
@@ -54,28 +54,25 @@ public class TeleOpFinal extends LinearOpMode {
             telemetry.addData("y", poseEstimate.getY());
             telemetry.addData("heading", poseEstimate.getHeading());
             telemetry.update();
-//TODO determin buttins vs flag
-            if (gamepad1.b && !isYDown) {
-                //Initial -> carry
-                //Carry -> dropoff
-                //Drop-off -> pickup
-                //Pickup -> carry
+
+            if (gamepad2.x && !isXButtonDown) {
                 switch(wobbleArm.getArmPosition()){
                     case INITIAL:
                     case PICKUP:
+                    case DROPOFF:
                         wobbleArm.moveToCarry();
                         break;
                     case CARRY:
-                        wobbleArm.moveToDropOff();
+                        if (wobbleArm.isGripOpen()){
+                            wobbleArm.moveToPickup();
+                        }else {
+                            wobbleArm.moveToDropOff();
+                        }
                         break;
-                    case DROPOFF:
-                        wobbleArm.moveToPickup();
-                        break;
-
                 }
             }
 
-            if (gamepad1.y && !isBDown) {
+            if (gamepad2.a && !isAButtonDown) {
                 if (!wobbleArm.isGripOpen()) {
                     wobbleArm.gripClose();
                 } else {
@@ -83,38 +80,38 @@ public class TeleOpFinal extends LinearOpMode {
                 }
             }
 
-            if (gamepad1.x && !xHasBeenPressed) {
+            if (gamepad2.y && !yHasBeenPressed) {
                 shooter.startRampUp();
-                xHasBeenPressed = true;
-            } else if (gamepad1.x) {
+                yHasBeenPressed = true;
+            } else if (gamepad2.y) {
                 shooter.stop();
-                xHasBeenPressed = false;
+                yHasBeenPressed = false;
             }
 
-            if (gamepad1.a) {
+            if (gamepad2.right_trigger > 0.0) {
                 shooter.fire();
             }
 
             shooter.update();
 
-            if (gamepad1.right_bumper && !hasRBBeenPressed && !hasLBBeenPressed) {
+            if (gamepad2.right_bumper && !hasRBBeenPressed && !hasLBBeenPressed) {
                 intake.startIn();
                 hasRBBeenPressed = true;
-            } else if(gamepad1.right_bumper && !hasLBBeenPressed) {
+            } else if(gamepad2.right_bumper && !hasLBBeenPressed) {
                 intake.stop();
                 hasRBBeenPressed = false;
             }
 
-            if (gamepad1.left_bumper && !hasLBBeenPressed && !hasRBBeenPressed) {
+            if (gamepad2.left_bumper && !hasLBBeenPressed && !hasRBBeenPressed) {
                 intake.startOut();
                 hasLBBeenPressed = true;
-            } else if(gamepad1.left_bumper && !hasRBBeenPressed) {
+            } else if(gamepad2.left_bumper && !hasRBBeenPressed) {
                 intake.stop();
                 hasLBBeenPressed = false;
             }
 
-            isYDown = gamepad1.y;
-            isBDown = gamepad1.b;
+            isXButtonDown = gamepad2.x;
+            isAButtonDown = gamepad2.a;
 
         }
     }

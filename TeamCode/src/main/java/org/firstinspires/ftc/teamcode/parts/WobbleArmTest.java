@@ -12,7 +12,6 @@ import org.firstinspires.ftc.teamcode.subsystem.WobbleArm;
 public class WobbleArmTest extends LinearOpMode {
 
     private WobbleArm wobbleArm;
-    public static int AP = -1;
 
     @Override
     public void runOpMode() {
@@ -21,40 +20,36 @@ public class WobbleArmTest extends LinearOpMode {
 
         waitForStart();
 
-        boolean isADown=false;
-        boolean isXDown=false;
+        boolean isXButtonDown=false;
+        boolean isAButtonDown=false;
 
         while (!isStopRequested()) {
-            if (gamepad1.a && !isADown) {
-
-                AP = wobbleArm.getArmPosition().ordinal();
-                //Initial -> carry
-                //Carry -> dropoff
-                //Drop-off -> pickup
-                //Pickup -> carry
+            if (gamepad2.x && !isXButtonDown) {
                 switch(wobbleArm.getArmPosition()){
                     case INITIAL:
                     case PICKUP:
+                    case DROPOFF:
                         wobbleArm.moveToCarry();
                         break;
                     case CARRY:
-                        wobbleArm.moveToDropOff();
+                        if (wobbleArm.isGripOpen()){
+                            wobbleArm.moveToPickup();
+                        }else {
+                            wobbleArm.moveToDropOff();
+                        }
                         break;
-                    case DROPOFF:
-                        wobbleArm.moveToPickup();
-                        break;
-
                 }
             }
-            if (gamepad1.x && !isXDown) {
-                if (wobbleArm.isGripOpen()){
+
+            if (gamepad2.a && !isAButtonDown) {
+                if (!wobbleArm.isGripOpen()) {
                     wobbleArm.gripClose();
-                }else {
+                } else {
                     wobbleArm.gripOpen();
                 }
             }
-            isADown=gamepad1.a;
-            isXDown=gamepad1.x;
+            isXButtonDown=gamepad2.x;
+            isAButtonDown=gamepad2.a;
         }
     }
 }

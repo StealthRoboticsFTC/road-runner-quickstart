@@ -7,10 +7,10 @@ import com.qualcomm.robotcore.hardware.Servo;
 @Config
 public class WobbleArm {
 
-    public static double ARM_INITIAL_POSITION = 0.25;
-    public static double ARM_CARRY_POSITION = 0.4188;
-    public static double ARM_DROPOFF_POSITION = 0.5313;
-    public static double ARM_PICKUP_POSITION = 0.5875;
+    public static double ARM_INITIAL_POSITION = 0.6666;
+    public static double ARM_CARRY_POSITION = 0.5;
+    public static double ARM_DROPOFF_POSITION = 0.4300;
+    public static double ARM_PICKUP_POSITION = 0.35;
     public static double GRIP_OPEN_POSITION=0.18;
     public static double GRIP_CLOSE_POSITION=0.55;
 
@@ -26,7 +26,6 @@ public class WobbleArm {
     private HardwareMap hardwareMap;
     public static ArmPosition armPosition;
     private boolean gripOpen;
-    public static double DEBUG_ARM_POSITION = 0.0;
 
     private WobbleArm(){}
 
@@ -40,25 +39,21 @@ public class WobbleArm {
 
     public void moveToInitial() {
         arm.setPosition(ARM_INITIAL_POSITION);
-        DEBUG_ARM_POSITION= ARM_INITIAL_POSITION;
         armPosition = ArmPosition.INITIAL;
     }
 
     public void moveToCarry() {
         arm.setPosition(ARM_CARRY_POSITION);
-        DEBUG_ARM_POSITION= ARM_CARRY_POSITION;
         armPosition = ArmPosition.CARRY;
     }
 
     public void moveToDropOff() {
         arm.setPosition(ARM_DROPOFF_POSITION);
-        DEBUG_ARM_POSITION= ARM_DROPOFF_POSITION;
         armPosition = ArmPosition.DROPOFF;
     }
 
     public void moveToPickup() {
         arm.setPosition(ARM_PICKUP_POSITION);
-        DEBUG_ARM_POSITION= ARM_PICKUP_POSITION;
         armPosition = ArmPosition.PICKUP;
     }
 
