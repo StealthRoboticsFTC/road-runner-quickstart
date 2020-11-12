@@ -19,9 +19,9 @@ public class Shooter {
 
     private SampleMecanumDrive drive;
 
-    private InterpLUT flapPositionTable = InterpLUT.createLUT(
-            Arrays.asList(0.0), Arrays.asList(0.0)
-    );
+//    private InterpLUT flapPositionTable = InterpLUT.createLUT(
+//            Arrays.asList(0.0), Arrays.asList(0.0)
+//    );
 
     enum State {
         OFF,
@@ -128,9 +128,9 @@ public class Shooter {
     }
 
     private void updateFlap() {
-        double distance = drive.getPoseEstimate().vec().minus(GOAL_POSITION).norm();
-        double flapPosition = flapPositionTable.get(distance);
-        shooterFlap.setPosition(flapPosition);
+//        double distance = drive.getPoseEstimate().vec().minus(GOAL_POSITION).norm();
+//        double flapPosition = flapPositionTable.get(distance);
+//        shooterFlap.setPosition(flapPosition);
     }
 
 }
