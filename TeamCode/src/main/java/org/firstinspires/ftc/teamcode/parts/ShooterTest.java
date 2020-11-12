@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.parts;
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -21,6 +22,7 @@ public class ShooterTest extends LinearOpMode {
         DcMotor backShooter = hardwareMap.get(DcMotor.class, "backShooter");
         DcMotor frontShooter = hardwareMap.get(DcMotor.class, "frontShooter");
         Servo flipper = hardwareMap.get(Servo.class, "flipper");
+        CRServo conveyor = hardwareMap.get(CRServo.class, "conveyor" );
 
         backShooter.setDirection(DcMotorSimple.Direction.REVERSE);
         frontShooter.setDirection(DcMotorSimple.Direction.REVERSE);

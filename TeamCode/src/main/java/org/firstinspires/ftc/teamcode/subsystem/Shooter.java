@@ -1,6 +1,8 @@
 package org.firstinspires.ftc.teamcode.subsystem;
 
+import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -10,12 +12,14 @@ import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.util.InterpLUT;
 import java.util.Arrays;
 
+@Config
 public class Shooter {
     private HardwareMap hardwareMap;
     private DcMotor frontShooter;
     private DcMotor backShooter;
     private Servo shooterArm;
     private Servo shooterFlap;
+    private CRServo conveyor;
 
     private SampleMecanumDrive drive;
 
@@ -38,8 +42,11 @@ public class Shooter {
 
     private static double MAX_ARM_POSITION = 0.5;
     private static double MIN_ARM_POSITION = 0.0;
-    private static double ARM_OUT_TIME = 0.1;
-    private static double ARM_IN_TIME = 0.05;
+    private static double ARM_OUT_TIME = 0.2;
+    private static double ARM_IN_TIME = 0.6;
+
+    private static double CONVEYOR_MOVING_POWER = 0.5;
+    private static double CONVEYOR_STOP_POWER = 0.0;
 
     public static Vector2d GOAL_POSITION = new Vector2d(124, 106);
 
@@ -55,6 +62,7 @@ public class Shooter {
         this.backShooter = hardwareMap.get(DcMotor.class, "backShooter");
         this.shooterArm = hardwareMap.get(Servo.class, "shooterArm");
         this.shooterFlap = hardwareMap.get(Servo.class, "shooterFlap");
+        this.conveyor = hardwareMap.get(CRServo.class, "conveyor" );
         this.drive = drive;
         this.stop();
         this.moveArmIn();
@@ -100,12 +108,14 @@ public class Shooter {
 
     public void startRampUp() {
         rampTime.reset();
+        conveyor.setPower(CONVEYOR_MOVING_POWER);
         shooterState = State.RAMP_UP;
     }
 
     public void stop() {
         frontShooter.setPower(SHOOTER_STOP_POWER);
         backShooter.setPower(SHOOTER_STOP_POWER);
+        conveyor.setPower(CONVEYOR_STOP_POWER);
         shooterState = State.OFF;
     }
 
