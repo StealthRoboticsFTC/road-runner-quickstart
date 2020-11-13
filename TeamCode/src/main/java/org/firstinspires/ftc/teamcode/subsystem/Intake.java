@@ -5,17 +5,6 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 public class Intake {
-    private DcMotor leftIntake;
-    private DcMotor rightIntake;
-    private CRServo vexMotor;
-    private HardwareMap hardwareMap;
-
-    enum State {
-        OFF,
-        IN,
-        OUT
-    }
-
     private static double INTAKE_IN_POWER = -1.0;
     private static double INTAKE_OUT_POWER = 1.0;
     private static double INTAKE_STOP_POWER = 0.0;
@@ -24,6 +13,16 @@ public class Intake {
     private static double INTAKE_VEX_OUT_POWER = 0.5;
     private static double INTAKE_VEX_STOP_POWER = 0.0;
 
+    public enum State {
+        OFF,
+        IN,
+        OUT
+    }
+
+    private DcMotor leftIntake;
+    private DcMotor rightIntake;
+    private CRServo vexMotor;
+    private HardwareMap hardwareMap;
     private State state = State.OFF;
 
     public Intake(HardwareMap hardwareMap) {

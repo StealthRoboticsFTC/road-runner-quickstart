@@ -27,7 +27,7 @@ public class Shooter {
 //            Arrays.asList(0.0), Arrays.asList(0.0)
 //    );
 
-    enum State {
+    public enum State {
         OFF,
         RAMP_UP,
         RUNNING,
