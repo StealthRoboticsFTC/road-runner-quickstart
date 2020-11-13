@@ -40,7 +40,7 @@ public class Intake {
     public void startIn() {
         leftIntake.setPower(INTAKE_IN_POWER);
         rightIntake.setPower(INTAKE_IN_POWER);
-        vexMotor.setPower(INTAKE_IN_POWER);
+        vexMotor.setPower(INTAKE_VEX_IN_POWER);
         state = State.IN;
     }
 
