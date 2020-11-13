@@ -100,6 +100,10 @@ public class Shooter {
         }
     }
 
+    public State getShooterState() {
+        return shooterState;
+    }
+
     private void setPower(double power) {
         double clipPower = Math.min(power, MAX_POWER);
         frontShooter.setPower(clipPower);

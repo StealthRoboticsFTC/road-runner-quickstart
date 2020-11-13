@@ -81,38 +81,40 @@ public class TeleOpFinal extends LinearOpMode {
             }
 
             if (gamepad2.y && !yHasBeenPressed) {
-                shooter.startRampUp();
-                yHasBeenPressed = true;
-            } else if (gamepad2.y) {
-                shooter.stop();
-                yHasBeenPressed = false;
+                if (shooter.getShooterState() == Shooter.State.OFF) {
+                    shooter.startRampUp();
+                } else {
+                    shooter.stop();
+                }
             }
 
-            if (gamepad2.right_trigger > 0.0) {
+            if (gamepad2.right_trigger > 0.0 && shooter.getShooterState() != Shooter.State.FIRING) {
                 shooter.fire();
             }
 
             shooter.update();
 
-            if (gamepad2.right_bumper && !hasRBBeenPressed && !hasLBBeenPressed) {
-                intake.startIn();
-                hasRBBeenPressed = true;
-            } else if(gamepad2.right_bumper && !hasLBBeenPressed) {
-                intake.stop();
-                hasRBBeenPressed = false;
+            if (gamepad2.right_bumper && !hasRBBeenPressed) {
+                if (intake.getState() == Intake.State.OFF) {
+                    intake.startIn();
+                } else {
+                    intake.stop();
+                }
             }
 
-            if (gamepad2.left_bumper && !hasLBBeenPressed && !hasRBBeenPressed) {
-                intake.startOut();
-                hasLBBeenPressed = true;
-            } else if(gamepad2.left_bumper && !hasRBBeenPressed) {
-                intake.stop();
-                hasLBBeenPressed = false;
+            if (gamepad2.left_bumper && !hasLBBeenPressed) {
+                if (intake.getState() == Intake.State.OFF) {
+                    intake.startOut();
+                } else {
+                    intake.stop();
+                }
             }
 
             isXButtonDown = gamepad2.x;
             isAButtonDown = gamepad2.a;
-
+            yHasBeenPressed = gamepad2.y;
+            hasRBBeenPressed = gamepad2.right_bumper;
+            hasLBBeenPressed = gamepad2.left_bumper;
         }
     }
 }
