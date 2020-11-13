@@ -34,27 +34,27 @@ public class Shooter {
         FIRING
     }
 
-    private State shooterState;
+    public State shooterState;
 
-    private static double SHOOTER_STOP_POWER = 0.0;
-    private static double MAX_POWER = 1.0;
-    private static double RAMP_UP_TIME = 2.5;
+    public static double SHOOTER_STOP_POWER = 0.0;
+    public static double MAX_POWER = 1.0;
+    public static double RAMP_UP_TIME = 2.5;
 
-    private static double MAX_ARM_POSITION = 0.5;
-    private static double MIN_ARM_POSITION = 0.0;
-    private static double ARM_OUT_TIME = 0.2;
-    private static double ARM_IN_TIME = 0.6;
+    public static double MAX_ARM_POSITION = 0.0;
+    public static double MIN_ARM_POSITION = 0.1;
+    public static double ARM_OUT_TIME = 0.2;
+    public static double ARM_IN_TIME = 0.6;
 
-    private static double CONVEYOR_MOVING_POWER = 0.5;
-    private static double CONVEYOR_STOP_POWER = 0.0;
+    public static double CONVEYOR_MOVING_POWER = 0.5;
+    public static double CONVEYOR_STOP_POWER = 0.0;
 
     public static Vector2d GOAL_POSITION = new Vector2d(124, 106);
 
-    private int shotsRemaining = 0;
-    private boolean armIsIn = true;
-    private ElapsedTime armWaitTime = new ElapsedTime();
+    public int shotsRemaining = 0;
+    public boolean armIsIn = true;
+    public ElapsedTime armWaitTime = new ElapsedTime();
 
-    private ElapsedTime rampTime = new ElapsedTime();
+    public ElapsedTime rampTime = new ElapsedTime();
 
     public Shooter(HardwareMap hardwareMap, SampleMecanumDrive drive) {
         this.hardwareMap = hardwareMap;
