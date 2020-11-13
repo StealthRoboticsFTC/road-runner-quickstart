@@ -19,11 +19,6 @@ public class TeleOpFinal extends LinearOpMode {
     @Override
     public void runOpMode() {
 
-        DcMotor leftFront = hardwareMap.get(DcMotor.class, "leftFront");
-        DcMotor leftRear = hardwareMap.get(DcMotor.class, "leftBack");
-        DcMotor rightFront = hardwareMap.get(DcMotor.class, "rightFront");
-        DcMotor rightRear = hardwareMap.get(DcMotor.class, "rightBack");
-
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
         drive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
