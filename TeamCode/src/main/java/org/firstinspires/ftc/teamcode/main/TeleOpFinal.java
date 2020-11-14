@@ -71,7 +71,7 @@ public class TeleOpFinal extends LinearOpMode {
             }
 
             if (gamepad2.a && !isAButtonDown) {
-                if (!wobbleArm.isGripOpen()) {
+                if (wobbleArm.isGripOpen()) {
                     wobbleArm.gripClose();
                 } else {
                     wobbleArm.gripOpen();
