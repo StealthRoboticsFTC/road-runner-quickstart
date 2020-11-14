@@ -14,17 +14,17 @@ public class WobbleArm {
     public static double GRIP_OPEN_POSITION=0.18;
     public static double GRIP_CLOSE_POSITION=0.55;
 
-   public enum ArmPosition {
+    public enum ArmPosition {
         INITIAL,
         CARRY,
         DROPOFF,
         PICKUP
     }
 
-    protected Servo arm;
-    protected Servo pincher;
+    private Servo arm;
+    private Servo pincher;
     private HardwareMap hardwareMap;
-    public static ArmPosition armPosition;
+    private ArmPosition armPosition;
     private boolean gripOpen;
 
     private WobbleArm(){}

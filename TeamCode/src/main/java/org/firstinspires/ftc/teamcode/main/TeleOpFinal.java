@@ -89,8 +89,6 @@ public class TeleOpFinal extends LinearOpMode {
             if (gamepad2.right_trigger > 0.0 && shooter.getShooterState() != Shooter.State.FIRING) {
                 shooter.fire();
             }
-            telemetry.addData("state", shooter.getShooterState());
-            telemetry.addData("shotsremaning", shooter.shotsRemaining);
             telemetry.update();
             shooter.update();
 

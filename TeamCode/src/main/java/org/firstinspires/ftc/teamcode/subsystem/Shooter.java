@@ -9,8 +9,6 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
-import org.firstinspires.ftc.teamcode.util.InterpLUT;
-import java.util.Arrays;
 
 @Config
 public class Shooter {
@@ -34,14 +32,14 @@ public class Shooter {
         FIRING
     }
 
-    public State shooterState;
+    private State shooterState;
 
     public static double SHOOTER_STOP_POWER = 0.0;
     public static double MAX_POWER = 1.0;
     public static double RAMP_UP_TIME = 2.5;
 
-    public static double MAX_ARM_POSITION = 0.0;
-    public static double MIN_ARM_POSITION = 0.12;
+    public static double OUT_ARM_POSITION = 0.0;
+    public static double IN_ARM_POSITION = 0.12;
     public static double ARM_OUT_TIME = 0.8;
     public static double ARM_IN_TIME = 0.8;
 
@@ -50,11 +48,10 @@ public class Shooter {
 
     public static Vector2d GOAL_POSITION = new Vector2d(124, 106);
 
-    public int shotsRemaining = 0;
-    public boolean armIsIn = true;
-    public ElapsedTime armWaitTime = new ElapsedTime();
-
-    public ElapsedTime rampTime = new ElapsedTime();
+    private int shotsRemaining = 0;
+    private boolean armIsIn = true;
+    private ElapsedTime armWaitTime = new ElapsedTime();
+    private ElapsedTime rampTime = new ElapsedTime();
 
     public Shooter(HardwareMap hardwareMap, SampleMecanumDrive drive) {
         this.hardwareMap = hardwareMap;
@@ -137,12 +134,12 @@ public class Shooter {
     }
 
     private void moveArmIn() {
-        shooterArm.setPosition(MIN_ARM_POSITION);
+        shooterArm.setPosition(IN_ARM_POSITION);
         armIsIn = true;
     }
 
     private void moveArmOut() {
-        shooterArm.setPosition(MAX_ARM_POSITION);
+        shooterArm.setPosition(OUT_ARM_POSITION);
         armIsIn = false;
     }
 
