@@ -51,7 +51,7 @@ public class TeleOpFinal extends LinearOpMode {
             telemetry.addData("x", poseEstimate.getX());
             telemetry.addData("y", poseEstimate.getY());
             telemetry.addData("heading", poseEstimate.getHeading());
-            telemetry.update();
+//            telemetry.update();
 
             if (gamepad2.x && !isXButtonDown) {
                 switch(wobbleArm.getArmPosition()){
@@ -90,6 +90,7 @@ public class TeleOpFinal extends LinearOpMode {
                 shooter.fire();
             }
             telemetry.addData("state", shooter.getShooterState());
+            telemetry.addData("shotsremaning", shooter.shotsRemaining);
             telemetry.update();
             shooter.update();
 

@@ -41,9 +41,9 @@ public class Shooter {
     public static double RAMP_UP_TIME = 2.5;
 
     public static double MAX_ARM_POSITION = 0.0;
-    public static double MIN_ARM_POSITION = 0.1;
-    public static double ARM_OUT_TIME = 0.2;
-    public static double ARM_IN_TIME = 0.6;
+    public static double MIN_ARM_POSITION = 0.12;
+    public static double ARM_OUT_TIME = 0.8;
+    public static double ARM_IN_TIME = 0.8;
 
     public static double CONVEYOR_MOVING_POWER = 0.5;
     public static double CONVEYOR_STOP_POWER = 0.0;
@@ -84,17 +84,20 @@ public class Shooter {
                 break;
             case FIRING:
                 updateFlap();
+                System.err.println("****** " + armWaitTime.seconds() + " : " + armIsIn);
                 if (armIsIn && armWaitTime.seconds() >= ARM_IN_TIME) {
                     moveArmOut();
-                    shotsRemaining--;
                     armWaitTime.reset();
-                } else if (armWaitTime.seconds() >= ARM_OUT_TIME) {
+                }
+                if (!armIsIn && armWaitTime.seconds() >= ARM_OUT_TIME) {
                     moveArmIn();
+                    shotsRemaining--;
                     armWaitTime.reset();
                 }
 
                 if (shotsRemaining == 0) {
                     shooterState = State.RUNNING;
+                    moveArmIn();
                 }
                 break;
         }
@@ -120,14 +123,16 @@ public class Shooter {
         frontShooter.setPower(SHOOTER_STOP_POWER);
         backShooter.setPower(SHOOTER_STOP_POWER);
         conveyor.setPower(CONVEYOR_STOP_POWER);
+        moveArmIn();
         shooterState = State.OFF;
     }
 
     public void fire() {
         if (shooterState == State.RUNNING) {
-            shooterState = State.FIRING;
+            moveArmIn();
             shotsRemaining = 3;
             armWaitTime.reset();
+            shooterState = State.FIRING;
         }
     }
 

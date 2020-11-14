@@ -6,8 +6,6 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.subsystem.WobbleArm;
 
-@Config
-
 @TeleOp
 public class WobbleArmTest extends LinearOpMode {
 
