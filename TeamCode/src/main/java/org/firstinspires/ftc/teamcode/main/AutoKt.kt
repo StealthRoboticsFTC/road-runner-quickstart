@@ -14,103 +14,122 @@ import org.firstinspires.ftc.teamcode.drive.DriveConstants.TRACK_WIDTH
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive
 import org.firstinspires.ftc.teamcode.subsystem.Shooter
 import org.firstinspires.ftc.teamcode.subsystem.WobbleArm
+import org.firstinspires.ftc.teamcode.vision.UGContourRingDetector
+import org.firstinspires.ftc.teamcode.vision.UGContourRingPipeline
 import java.util.*
+import kotlin.collections.ArrayList
 
 @Autonomous
 class AutoKt: LinearOpMode() {
-    enum class AutoType {
-        ZERO,
-        ONE,
-        FOUR
-    }
-
-    @Config
-    companion object {
-        @JvmStatic
-        var autoType: AutoType = AutoType.ZERO
-    }
-
     private val slowConstraints = DriveConstraints(5.0, BASE_CONSTRAINTS.maxAccel, BASE_CONSTRAINTS.maxJerk, BASE_CONSTRAINTS.maxAngVel, BASE_CONSTRAINTS.maxAngAccel, BASE_CONSTRAINTS.maxAngJerk)
     private val slowCombinedConstraints = MecanumConstraints(slowConstraints, TRACK_WIDTH)
 
     private val startPose = Pose2d(-60.0, 19.0, 0.0)
-    
-    override fun runOpMode() {
-        val drive = SampleMecanumDrive(hardwareMap)
-        val arm = WobbleArm(hardwareMap)
-        val shooter = Shooter(hardwareMap, drive)
 
+    private lateinit var drive: SampleMecanumDrive
+    private lateinit var arm: WobbleArm
+    private lateinit var shooter: Shooter
+
+    private fun midTrajectories(startPose: Pose2d): List<Trajectory> {
         val list = ArrayList<Trajectory>()
+
+        val builder2 = drive.trajectoryBuilder(startPose, true)
+        builder2.splineTo(Vector2d(-20.0, 36.0), 180.0.toRadians)
+        list.add(builder2.build())
 
         val builder3 = drive.trajectoryBuilder(list[list.size - 1].end(), 90.0.toRadians)
         builder3
                 .splineToSplineHeading(Pose2d(-28.0, 57.0, 180.0.toRadians), 180.0.toRadians)
                 .addTemporalMarker(0.0, -1.5) { arm.moveToPickup() }
                 .splineTo(Vector2d(-36.0, 57.0), 180.0.toRadians, slowCombinedConstraints)
+        list.add(builder3.build())
 
-        when (autoType) {
-            AutoType.ZERO -> {
-                val builder1 = drive.trajectoryBuilder(startPose, startPose.heading)
-                builder1.splineTo(Vector2d(22.0, 40.0), 90.0.toRadians)
-                list.add(builder1.build())
+        return list
+    }
 
-                val builder2 = drive.trajectoryBuilder(list[list.size - 1].end(), true)
-                builder2.splineTo(Vector2d(-20.0, 36.0), 180.0.toRadians)
-                list.add(builder2.build())
+    private fun zeroTrajectories(): List<Trajectory> {
+        val list = ArrayList<Trajectory>()
 
-                list.add(builder3.build())
+        val builder1 = drive.trajectoryBuilder(startPose, startPose.heading)
+        builder1.splineTo(Vector2d(22.0, 40.0), 90.0.toRadians)
+        list.add(builder1.build())
 
-                val builder4 = drive.trajectoryBuilder(list[list.size - 1].end(), 0.0.toRadians)
-                builder4.splineToSplineHeading(Pose2d(-20.0, 57.0, 0.0.toRadians), 0.0.toRadians)
-                builder4.splineTo(Vector2d(-6.0, 57.0), 0.0.toRadians)
-                list.add(builder4.build())
+        val midTrajectories = midTrajectories(list[list.size - 1].end())
+        for (trajectory in midTrajectories) list.add(trajectory)
 
-                val builder5 = drive.trajectoryBuilder(list[list.size - 1].end(), 270.0.toRadians)
-                builder5.splineToConstantHeading(Vector2d(8.0, 36.0), 0.0.toRadians)
-                list.add(builder5.build())
-            }
+        val builder4 = drive.trajectoryBuilder(list[list.size - 1].end(), 0.0.toRadians)
+        builder4.splineToSplineHeading(Pose2d(-20.0, 57.0, 0.0.toRadians), 0.0.toRadians)
+        builder4.splineTo(Vector2d(-6.0, 57.0), 0.0.toRadians)
+        list.add(builder4.build())
 
-            AutoType.ONE -> {
-                val builder1 = drive.trajectoryBuilder(startPose, startPose.heading)
-                builder1.splineTo(Vector2d(26.0, 26.0), 0.0.toRadians)
-                list.add(builder1.build())
+        val builder5 = drive.trajectoryBuilder(list[list.size - 1].end(), 270.0.toRadians)
+        builder5.splineToConstantHeading(Vector2d(8.0, 36.0), 0.0.toRadians)
+        list.add(builder5.build())
 
-                val builder2 = drive.trajectoryBuilder(list[list.size - 1].end(), true)
-                builder2.splineTo(Vector2d(-20.0, 36.0), 180.0.toRadians)
-                list.add(builder2.build())
+        return list
+    }
 
-                list.add(builder3.build())
+    private fun oneTrajectories(): List<Trajectory> {
+        val list = ArrayList<Trajectory>()
 
-                val builder4 = drive.trajectoryBuilder(list[list.size - 1].end(), 0.0.toRadians)
-                builder4.splineToSplineHeading(Pose2d(-26.0, 57.0, 0.0.toRadians), 0.0.toRadians)
-                builder4.splineTo(Vector2d(19.0, 26.0), 0.0.toRadians)
-                list.add(builder4.build())
+        val builder1 = drive.trajectoryBuilder(startPose, startPose.heading)
+        builder1.splineTo(Vector2d(26.0, 26.0), 0.0.toRadians)
+        list.add(builder1.build())
 
-                val builder5 = drive.trajectoryBuilder(list[list.size - 1].end(), true)
-                builder5.back(10.0)
-                list.add(builder5.build())
-            }
+        val midTrajectories = midTrajectories(list[list.size - 1].end())
+        for (trajectory in midTrajectories) list.add(trajectory)
 
-            AutoType.FOUR -> {
-                val builder1 = drive.trajectoryBuilder(startPose, startPose.heading)
-                builder1.splineTo(Vector2d(56.0, 40.0), 60.0.toRadians)
-                list.add(builder1.build())
+        val builder4 = drive.trajectoryBuilder(list[list.size - 1].end(), 0.0.toRadians)
+        builder4.splineToSplineHeading(Pose2d(-26.0, 57.0, 0.0.toRadians), 0.0.toRadians)
+        builder4.splineTo(Vector2d(19.0, 26.0), 0.0.toRadians)
+        list.add(builder4.build())
 
-                val builder2 = drive.trajectoryBuilder(list[list.size - 1].end(), true)
-                builder2.splineTo(Vector2d(-20.0, 36.0), 180.0.toRadians)
-                list.add(builder2.build())
+        val builder5 = drive.trajectoryBuilder(list[list.size - 1].end(), true)
+        builder5.back(10.0)
+        list.add(builder5.build())
 
-                list.add(builder3.build())
+        return list
+    }
 
-                val builder4 = drive.trajectoryBuilder(list[list.size - 1].end(), 0.0.toRadians)
-                builder4.splineToSplineHeading(Pose2d(-20.0, 57.0, 0.0.toRadians), 0.0.toRadians)
-                builder4.splineTo(Vector2d(46.0, 57.0), 0.0.toRadians)
-                list.add(builder4.build())
+    private fun fourTrajectories(): List<Trajectory> {
+        val list = ArrayList<Trajectory>()
 
-                val builder5 = drive.trajectoryBuilder(list[list.size - 1].end(), true)
-                builder5.splineTo(Vector2d(8.0, 36.0), 180.0.toRadians)
-                list.add(builder5.build())
-            }
+        val builder1 = drive.trajectoryBuilder(startPose, startPose.heading)
+        builder1.splineTo(Vector2d(56.0, 40.0), 60.0.toRadians)
+        list.add(builder1.build())
+
+        val midTrajectories = midTrajectories(list[list.size - 1].end())
+        for (trajectory in midTrajectories) list.add(trajectory)
+
+        val builder4 = drive.trajectoryBuilder(list[list.size - 1].end(), 0.0.toRadians)
+        builder4.splineToSplineHeading(Pose2d(-20.0, 57.0, 0.0.toRadians), 0.0.toRadians)
+        builder4.splineTo(Vector2d(46.0, 57.0), 0.0.toRadians)
+        list.add(builder4.build())
+
+        val builder5 = drive.trajectoryBuilder(list[list.size - 1].end(), true)
+        builder5.splineTo(Vector2d(8.0, 36.0), 180.0.toRadians)
+        list.add(builder5.build())
+
+        return list
+    }
+
+    override fun runOpMode() {
+        val drive = SampleMecanumDrive(hardwareMap)
+        val arm = WobbleArm(hardwareMap)
+        val shooter = Shooter(hardwareMap, drive)
+
+        val detector = UGContourRingDetector(hardwareMap, "webcam", telemetry, true)
+
+        val zeroTrajectories = zeroTrajectories()
+        val oneTrajectories = oneTrajectories()
+        val fourTrajectories = fourTrajectories()
+
+        waitForStart()
+
+        val list = when (detector.height) {
+            UGContourRingPipeline.Height.ZERO -> zeroTrajectories
+            UGContourRingPipeline.Height.ONE -> oneTrajectories
+            UGContourRingPipeline.Height.FOUR -> fourTrajectories
         }
 
         drive.followTrajectory(list[0])
