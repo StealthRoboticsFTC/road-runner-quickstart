@@ -118,7 +118,7 @@ class AutoKt: LinearOpMode() {
         val arm = WobbleArm(hardwareMap)
         val shooter = Shooter(hardwareMap, drive)
 
-        val detector = UGContourRingDetector(hardwareMap, "webcam", telemetry, true)
+//        val detector = UGContourRingDetector(hardwareMap, "webcam", telemetry, true)
 
         val zeroTrajectories = zeroTrajectories()
         val oneTrajectories = oneTrajectories()
@@ -126,11 +126,12 @@ class AutoKt: LinearOpMode() {
 
         waitForStart()
 
-        val list = when (detector.height) {
+        /*val list = when (detector.height) {
             UGContourRingPipeline.Height.ZERO -> zeroTrajectories
             UGContourRingPipeline.Height.ONE -> oneTrajectories
             UGContourRingPipeline.Height.FOUR -> fourTrajectories
-        }
+        }*/
+        val list = zeroTrajectories
 
         drive.followTrajectory(list[0])
         arm.moveToDropOff()
