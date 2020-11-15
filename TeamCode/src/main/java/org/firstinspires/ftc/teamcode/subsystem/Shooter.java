@@ -36,12 +36,12 @@ public class Shooter {
 
     public static double SHOOTER_STOP_POWER = 0.0;
     public static double MAX_POWER = 1.0;
-    public static double RAMP_UP_TIME = 2.5;
+    public static double RAMP_UP_TIME = 1.0;
 
     public static double OUT_ARM_POSITION = 0.0;
     public static double IN_ARM_POSITION = 0.12;
-    public static double ARM_OUT_TIME = 0.8;
-    public static double ARM_IN_TIME = 0.8;
+    public static double ARM_OUT_TIME = 0.4;
+    public static double ARM_IN_TIME = 1.2;
 
     public static double CONVEYOR_MOVING_POWER = 0.5;
     public static double CONVEYOR_STOP_POWER = 0.0;

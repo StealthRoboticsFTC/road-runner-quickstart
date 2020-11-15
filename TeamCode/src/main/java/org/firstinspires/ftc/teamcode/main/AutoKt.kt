@@ -24,7 +24,7 @@ class AutoKt: LinearOpMode() {
     private val slowConstraints = DriveConstraints(5.0, BASE_CONSTRAINTS.maxAccel, BASE_CONSTRAINTS.maxJerk, BASE_CONSTRAINTS.maxAngVel, BASE_CONSTRAINTS.maxAngAccel, BASE_CONSTRAINTS.maxAngJerk)
     private val slowCombinedConstraints = MecanumConstraints(slowConstraints, TRACK_WIDTH)
 
-    private val startPose = Pose2d(-60.0, 19.0, 0.0)
+    private val startPose = Pose2d(-63.0, 19.0, 0.0)
 
     private lateinit var drive: SampleMecanumDrive
     private lateinit var arm: WobbleArm
@@ -34,13 +34,13 @@ class AutoKt: LinearOpMode() {
         val list = ArrayList<Trajectory>()
 
         val builder2 = drive.trajectoryBuilder(startPose, true)
-        builder2.splineTo(Vector2d(-20.0, 36.0), 180.0.toRadians)
+        builder2.splineTo(Vector2d(-20.0, 41.0), 180.0.toRadians)
         list.add(builder2.build())
 
         val builder3 = drive.trajectoryBuilder(list[list.size - 1].end(), 90.0.toRadians)
         builder3
                 .splineToSplineHeading(Pose2d(-28.0, 57.0, 180.0.toRadians), 180.0.toRadians)
-                .addTemporalMarker(0.0, -1.5) { arm.moveToPickup() }
+                .addTemporalMarker(1.0, -1.5) { arm.moveToPickup() }
                 .splineTo(Vector2d(-36.0, 57.0), 180.0.toRadians, slowCombinedConstraints)
         list.add(builder3.build())
 
@@ -114,9 +114,9 @@ class AutoKt: LinearOpMode() {
     }
 
     override fun runOpMode() {
-        val drive = SampleMecanumDrive(hardwareMap)
-        val arm = WobbleArm(hardwareMap)
-        val shooter = Shooter(hardwareMap, drive)
+        drive = SampleMecanumDrive(hardwareMap)
+        arm = WobbleArm(hardwareMap)
+        shooter = Shooter(hardwareMap, drive)
 
 //        val detector = UGContourRingDetector(hardwareMap, "webcam", telemetry, true)
 
@@ -125,6 +125,7 @@ class AutoKt: LinearOpMode() {
         val fourTrajectories = fourTrajectories()
 
         waitForStart()
+        drive.poseEstimate = startPose
 
         /*val list = when (detector.height) {
             UGContourRingPipeline.Height.ZERO -> zeroTrajectories
@@ -132,6 +133,7 @@ class AutoKt: LinearOpMode() {
             UGContourRingPipeline.Height.FOUR -> fourTrajectories
         }*/
         val list = zeroTrajectories
+
 
         drive.followTrajectory(list[0])
         arm.moveToDropOff()
@@ -141,11 +143,20 @@ class AutoKt: LinearOpMode() {
         arm.moveToCarry()
 
         drive.followTrajectory(list[1])
+        shooter.startRampUp()
+        while (shooter.shooterState == Shooter.State.RAMP_UP) {
+            shooter.update()
+        }
         shooter.fire()
         while (shooter.shooterState == Shooter.State.FIRING) {
-            idle()
+            shooter.update()
         }
-        sleep(300)
+        val waitTimer = ElapsedTime()
+        while (waitTimer.seconds() < 1.2) {
+            shooter.update()
+        }
+
+        shooter.stop()
 
         drive.followTrajectory(list[2])
         arm.gripClose()
@@ -161,16 +172,16 @@ class AutoKt: LinearOpMode() {
 
         drive.followTrajectory(list[4])
 
-        val timer = ElapsedTime()
-        while (!isStopRequested) {
-            if (timer.seconds() > .7) {
-                if (arm.armPosition == WobbleArm.ArmPosition.CARRY) {
-                    arm.moveToDropOff()
-                } else {
-                    arm.moveToCarry()
-                }
-            }
-        }
+//        val timer = ElapsedTime()
+//        while (!isStopRequested) {
+//            if (timer.seconds() > .7) {
+//                if (arm.armPosition == WobbleArm.ArmPosition.CARRY) {
+//                    arm.moveToDropOff()
+//                } else {
+//                    arm.moveToCarry()
+//                }
+//            }
+//        }
     }
 }
 
