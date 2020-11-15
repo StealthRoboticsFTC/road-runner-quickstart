@@ -39,9 +39,9 @@ class AutoKt: LinearOpMode() {
 
         val builder3 = drive.trajectoryBuilder(list[list.size - 1].end(), 90.0.toRadians)
         builder3
-                .splineToSplineHeading(Pose2d(-28.0, 57.0, 180.0.toRadians), 180.0.toRadians)
-                .addTemporalMarker(1.0, -1.5) { arm.moveToPickup() }
-                .splineTo(Vector2d(-36.0, 57.0), 180.0.toRadians, slowCombinedConstraints)
+                .splineToSplineHeading(Pose2d(-28.0, 53.0, 180.0.toRadians), 180.0.toRadians)
+                .addTemporalMarker(1.0, -2.5) { arm.moveToPickup() }
+                .splineTo(Vector2d(-36.0, 53.0), 180.0.toRadians, slowCombinedConstraints)
         list.add(builder3.build())
 
         return list
@@ -73,7 +73,7 @@ class AutoKt: LinearOpMode() {
         val list = ArrayList<Trajectory>()
 
         val builder1 = drive.trajectoryBuilder(startPose, startPose.heading)
-        builder1.splineTo(Vector2d(26.0, 26.0), 0.0.toRadians)
+        builder1.splineTo(Vector2d(20.0, 26.0), 0.0.toRadians)
         list.add(builder1.build())
 
         val midTrajectories = midTrajectories(list[list.size - 1].end())
@@ -81,7 +81,7 @@ class AutoKt: LinearOpMode() {
 
         val builder4 = drive.trajectoryBuilder(list[list.size - 1].end(), 0.0.toRadians)
         builder4.splineToSplineHeading(Pose2d(-26.0, 57.0, 0.0.toRadians), 0.0.toRadians)
-        builder4.splineTo(Vector2d(19.0, 26.0), 0.0.toRadians)
+        builder4.splineTo(Vector2d(14.0, 32.0), 0.0.toRadians)
         list.add(builder4.build())
 
         val builder5 = drive.trajectoryBuilder(list[list.size - 1].end(), true)
@@ -95,7 +95,7 @@ class AutoKt: LinearOpMode() {
         val list = ArrayList<Trajectory>()
 
         val builder1 = drive.trajectoryBuilder(startPose, startPose.heading)
-        builder1.splineTo(Vector2d(56.0, 40.0), 60.0.toRadians)
+        builder1.splineTo(Vector2d(54.0, 38.0), 60.0.toRadians)
         list.add(builder1.build())
 
         val midTrajectories = midTrajectories(list[list.size - 1].end())
@@ -103,7 +103,7 @@ class AutoKt: LinearOpMode() {
 
         val builder4 = drive.trajectoryBuilder(list[list.size - 1].end(), 0.0.toRadians)
         builder4.splineToSplineHeading(Pose2d(-20.0, 57.0, 0.0.toRadians), 0.0.toRadians)
-        builder4.splineTo(Vector2d(46.0, 57.0), 0.0.toRadians)
+        builder4.splineTo(Vector2d(42.0, 57.0), 0.0.toRadians)
         list.add(builder4.build())
 
         val builder5 = drive.trajectoryBuilder(list[list.size - 1].end(), true)
@@ -117,6 +117,8 @@ class AutoKt: LinearOpMode() {
         drive = SampleMecanumDrive(hardwareMap)
         arm = WobbleArm(hardwareMap)
         shooter = Shooter(hardwareMap, drive)
+        arm.gripClose()
+
 
 //        val detector = UGContourRingDetector(hardwareMap, "webcam", telemetry, true)
 
@@ -132,7 +134,7 @@ class AutoKt: LinearOpMode() {
             UGContourRingPipeline.Height.ONE -> oneTrajectories
             UGContourRingPipeline.Height.FOUR -> fourTrajectories
         }*/
-        val list = zeroTrajectories
+        val list = fourTrajectories
 
 
         drive.followTrajectory(list[0])
