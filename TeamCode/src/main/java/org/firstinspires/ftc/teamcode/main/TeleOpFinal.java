@@ -51,7 +51,7 @@ public class TeleOpFinal extends LinearOpMode {
             drive.setWeightedDrivePower(
                     new Pose2d(
                             movementVector,
-                            -controlScale(gamepad1.right_stick_x)
+                            controlScale(-gamepad1.right_stick_x)
                     ).times(scaleFactor)
             );
 
