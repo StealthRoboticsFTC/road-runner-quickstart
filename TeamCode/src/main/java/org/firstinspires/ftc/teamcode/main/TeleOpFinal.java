@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.main;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
+import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -15,6 +16,10 @@ public class TeleOpFinal extends LinearOpMode {
     private WobbleArm wobbleArm;
     private Shooter shooter;
     private Intake intake;
+
+    private double controlScale(double x) {
+        return (x * x * x + x) / 2.0;
+    }
 
     @Override
     public void runOpMode() {
@@ -37,12 +42,17 @@ public class TeleOpFinal extends LinearOpMode {
         boolean hasLBBeenPressed = false;
 
         while (!isStopRequested()) {
+            Vector2d gamepadDirection = new Vector2d(-gamepad1.left_stick_y, -gamepad1.left_stick_x);
+            double gamepadNorm = gamepadDirection.norm();
+            Vector2d movementVector = gamepadDirection.times(controlScale(gamepadNorm) / gamepadNorm);
+
+            double scaleFactor = wobbleArm.getArmPosition() != WobbleArm.ArmPosition.CARRY ? 0.5 : 1.0;
+
             drive.setWeightedDrivePower(
                     new Pose2d(
-                            -gamepad1.left_stick_y,
-                            -gamepad1.left_stick_x,
-                            -gamepad1.right_stick_x
-                    )
+                            movementVector,
+                            -controlScale(gamepad1.right_stick_x)
+                    ).times(scaleFactor)
             );
 
             drive.update();
