@@ -46,7 +46,7 @@ public class TeleOpFinal extends LinearOpMode {
             double gamepadNorm = gamepadDirection.norm();
             Vector2d movementVector = gamepadDirection.times(controlScale(gamepadNorm) / gamepadNorm);
 
-            double scaleFactor = wobbleArm.getArmPosition() != WobbleArm.ArmPosition.CARRY ? 0.5 : 1.0;
+            double scaleFactor = wobbleArm.getArmPosition() == WobbleArm.ArmPosition.PICKUP ? 0.5 : 1.0;
 
             drive.setWeightedDrivePower(
                     new Pose2d(
