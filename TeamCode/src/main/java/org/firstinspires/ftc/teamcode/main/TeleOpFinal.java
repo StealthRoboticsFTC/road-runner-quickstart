@@ -44,7 +44,9 @@ public class TeleOpFinal extends LinearOpMode {
         while (!isStopRequested()) {
             Vector2d gamepadDirection = new Vector2d(-gamepad1.left_stick_y, -gamepad1.left_stick_x);
             double gamepadNorm = gamepadDirection.norm();
-            Vector2d movementVector = gamepadDirection.times(controlScale(gamepadNorm) / gamepadNorm);
+            Vector2d movementVector = gamepadNorm != 0.0 ?
+                    gamepadDirection.times(controlScale(gamepadNorm) / gamepadNorm)
+                    : new Vector2d(0.0, 0.0);
 
             double scaleFactor = wobbleArm.getArmPosition() == WobbleArm.ArmPosition.PICKUP ? 0.5 : 1.0;
 
