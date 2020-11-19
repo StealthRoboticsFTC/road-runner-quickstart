@@ -99,7 +99,7 @@ class UGContourRingPipeline(
 
         /** Horizon value in use, anything above this value (less than the value) since
          * (0, 0) is the top left of the camera frame **/
-        var HORIZON: Int = ((150.0 / 320.0) * CAMERA_WIDTH).toInt()
+        var HORIZON: Int = ((100.0 / 320.0) * CAMERA_WIDTH).toInt()
 
         /** algorithmically calculated minimum width for width check based on camera width **/
         val MIN_WIDTH

@@ -31,7 +31,7 @@ class UGContourRingDetector(
 
     val height: UGContourRingPipeline.Height
         get() {
-            return UGContourRingPipeline.Height.ZERO
+            return ftcLibPipeline.height
         }
 
     fun init() {

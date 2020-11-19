@@ -120,7 +120,9 @@ class AutoKt: LinearOpMode() {
         arm.gripClose()
 
 
-//        val detector = UGContourRingDetector(hardwareMap, "webcam", telemetry, true)
+        val detector = UGContourRingDetector(hardwareMap, "webcam", telemetry, true)
+
+        detector.init()
 
         val zeroTrajectories = zeroTrajectories()
         val oneTrajectories = oneTrajectories()
@@ -129,13 +131,13 @@ class AutoKt: LinearOpMode() {
         waitForStart()
         drive.poseEstimate = startPose
 
-        /*val list = when (detector.height) {
+        val list = when (detector.height) {
             UGContourRingPipeline.Height.ZERO -> zeroTrajectories
             UGContourRingPipeline.Height.ONE -> oneTrajectories
             UGContourRingPipeline.Height.FOUR -> fourTrajectories
-        }*/
-        val list = fourTrajectories
-
+        }
+//        val list = fourTrajectories
+        detector.camera.closeCameraDeviceAsync {  }
 
         drive.followTrajectory(list[0])
         arm.moveToDropOff()

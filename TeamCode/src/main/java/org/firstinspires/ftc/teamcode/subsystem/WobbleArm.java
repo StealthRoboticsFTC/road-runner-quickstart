@@ -7,7 +7,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 @Config
 public class WobbleArm {
 
-    public static double ARM_INITIAL_POSITION = 0.6666;
+    public static double ARM_INITIAL_POSITION = 0.6766;
     public static double ARM_CARRY_POSITION = 0.5;
     public static double ARM_DROPOFF_POSITION = 0.4300;
     public static double ARM_PICKUP_POSITION = 0.35;
