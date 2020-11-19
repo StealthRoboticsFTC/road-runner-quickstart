@@ -46,8 +46,11 @@ public class Shooter {
     public static double CONVEYOR_MOVING_POWER = 0.5;
     public static double CONVEYOR_STOP_POWER = 0.0;
 
+    public static double BASELINE_VOLTAGE = 12.6;
+
     public static Vector2d GOAL_POSITION = new Vector2d(124, 106);
 
+    private double initVoltage = 0.0;
     private int shotsRemaining = 0;
     private boolean armIsIn = true;
     private ElapsedTime armWaitTime = new ElapsedTime();
@@ -59,8 +62,9 @@ public class Shooter {
         this.backShooter = hardwareMap.get(DcMotor.class, "backShooter");
         this.shooterArm = hardwareMap.get(Servo.class, "shooterArm");
         this.shooterFlap = hardwareMap.get(Servo.class, "shooterFlap");
-        this.conveyor = hardwareMap.get(CRServo.class, "conveyor" );
+        this.conveyor = hardwareMap.get(CRServo.class, "conveyor");
         this.drive = drive;
+        this.initVoltage = hardwareMap.voltageSensor.iterator().next().getVoltage();
         this.stop();
         this.moveArmIn();
     }
@@ -105,7 +109,7 @@ public class Shooter {
     }
 
     private void setPower(double power) {
-        double clipPower = Math.min(power, MAX_POWER);
+        double clipPower = Math.min(power, MAX_POWER) * BASELINE_VOLTAGE / initVoltage;
         frontShooter.setPower(clipPower);
         backShooter.setPower(clipPower);
     }
