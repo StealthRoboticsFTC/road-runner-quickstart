@@ -119,7 +119,6 @@ class AutoKt: LinearOpMode() {
         shooter = Shooter(hardwareMap, drive)
         arm.gripClose()
 
-
         val detector = UGContourRingDetector(hardwareMap, "webcam", telemetry, true)
 
         detector.init()
