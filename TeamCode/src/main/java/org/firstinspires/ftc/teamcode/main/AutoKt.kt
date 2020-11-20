@@ -113,6 +113,18 @@ class AutoKt: LinearOpMode() {
         return list
     }
 
+    private fun update() {
+        drive.update()
+        shooter.update()
+    }
+
+    private fun sleepUpdate(ms: Long) {
+        val elapsedTime = ElapsedTime()
+        while (elapsedTime.milliseconds() < ms) {
+            update()
+        }
+    }
+
     override fun runOpMode() {
         drive = SampleMecanumDrive(hardwareMap)
         arm = WobbleArm(hardwareMap)
@@ -140,40 +152,38 @@ class AutoKt: LinearOpMode() {
 
         drive.followTrajectory(list[0])
         arm.moveToDropOff()
-        sleep(600)
+        sleepUpdate(600)
         arm.gripOpen()
-        sleep(500)
+        sleepUpdate(500)
         arm.moveToCarry()
 
         drive.followTrajectory(list[1])
         shooter.startRampUp()
         while (shooter.shooterState == Shooter.State.RAMP_UP) {
-            shooter.update()
+            update()
         }
         shooter.fire()
         while (shooter.shooterState == Shooter.State.FIRING) {
-            shooter.update()
+            update()
         }
-        val waitTimer = ElapsedTime()
-        while (waitTimer.seconds() < 1.2) {
-            shooter.update()
-        }
+        sleepUpdate(1500)
 
         shooter.stop()
 
         drive.followTrajectory(list[2])
         arm.gripClose()
-        sleep(300)
+        sleepUpdate(300)
         arm.moveToCarry()
-        sleep(1000)
+        sleepUpdate(1000)
 
         drive.followTrajectory(list[3])
         arm.moveToDropOff()
-        sleep(500)
+        sleepUpdate(500)
         arm.gripOpen()
-        sleep(500)
+        sleepUpdate(500)
 
         drive.followTrajectory(list[4])
+        arm.moveToInitial()
 
 //        val timer = ElapsedTime()
 //        while (!isStopRequested) {
