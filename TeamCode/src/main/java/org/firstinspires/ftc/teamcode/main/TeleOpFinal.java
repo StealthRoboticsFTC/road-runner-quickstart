@@ -20,6 +20,8 @@ import static org.firstinspires.ftc.teamcode.drive.DriveConstants.kV;
 @TeleOp
 public class TeleOpFinal extends LinearOpMode {
     public static Vector2d GOAL_POSITION = new Vector2d(76.0, 36.0);
+    public static double K_TURN = 0.15;
+    public static double K_TRANSLATION = 0.4;
 
     private PIDFController headingController = new PIDFController(SampleMecanumDrive.HEADING_PID);
 
@@ -27,8 +29,8 @@ public class TeleOpFinal extends LinearOpMode {
     private Shooter shooter;
     private Intake intake;
 
-    private double controlScale(double x) {
-        return (x * x * x + x) / 2.0;
+    private double controlScale(double x, double k) {
+        return (1.0 - k) * x * x * x + k * x;
     }
 
     @Override
@@ -68,7 +70,7 @@ public class TeleOpFinal extends LinearOpMode {
             Vector2d gamepadDirection = new Vector2d(-gamepad1.left_stick_y, -gamepad1.left_stick_x);
             double gamepadNorm = gamepadDirection.norm();
             Vector2d movementVector = gamepadNorm != 0.0
-                    ? gamepadDirection.times(controlScale(gamepadNorm) / gamepadNorm)
+                    ? gamepadDirection.times(controlScale(gamepadNorm, K_TRANSLATION) / gamepadNorm)
                     : new Vector2d(0.0, 0.0);
 
             double scaleFactor = wobbleArm.getArmPosition() == WobbleArm.ArmPosition.PICKUP ? 0.5 : 1.0;
@@ -85,7 +87,7 @@ public class TeleOpFinal extends LinearOpMode {
 
             Pose2d driveVelocity = new Pose2d(
                     movementVector,
-                    controlScale(-gamepad1.right_stick_x) + omegaCorrection * kV * TRACK_WIDTH
+                    controlScale(-gamepad1.right_stick_x, K_TURN) + omegaCorrection * kV * TRACK_WIDTH
             ).times(scaleFactor);
 
             drive.setWeightedDrivePower(driveVelocity);
