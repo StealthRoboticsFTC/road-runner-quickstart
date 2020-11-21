@@ -41,7 +41,7 @@ class AutoKt: LinearOpMode() {
         builder3
                 .splineToSplineHeading(Pose2d(-28.0, 53.0, 180.0.toRadians), 180.0.toRadians)
                 .addTemporalMarker(1.0, -2.5) { arm.moveToPickup() }
-                .splineTo(Vector2d(-36.0, 52.0), 180.0.toRadians, slowCombinedConstraints)
+                .splineTo(Vector2d(-36.0, 53.0), 180.0.toRadians, slowCombinedConstraints)
         list.add(builder3.build())
 
         return list
