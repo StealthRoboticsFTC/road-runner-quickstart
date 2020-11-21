@@ -73,17 +73,19 @@ public class Yash extends LinearOpMode {
                     ? gamepadDirection.times(controlScale(gamepadNorm, K_TRANSLATION) / gamepadNorm)
                     : new Vector2d(0.0, 0.0);
 
-            double scaleFactor = wobbleArm.getArmPosition() == WobbleArm.ArmPosition.PICKUP ? 0.5 : 1.0;
+            double scaleFactor = gamepad1.left_bumper ? 0.4
+                    : wobbleArm.getArmPosition() == WobbleArm.ArmPosition.PICKUP ? 0.5
+                    : 1.0;
 
             double omegaCorrection = 0.0;
-            if (gamepad2.b || gamepad1.left_trigger > 0.5 || gamepad1.right_trigger > 0.5) {
-                double theta = GOAL_POSITION.minus(poseEstimate.vec()).angle();
-                headingController.setTargetPosition(theta);
-
-                omegaCorrection = velocityEstimate != null
-                        ? headingController.update(poseEstimate.getHeading(), velocityEstimate.getHeading())
-                        : headingController.update(poseEstimate.getHeading());
-            }
+//            if (gamepad2.b || gamepad1.left_trigger > 0.5 || gamepad1.right_trigger > 0.5) {
+//                double theta = GOAL_POSITION.minus(poseEstimate.vec()).angle();
+//                headingController.setTargetPosition(theta);
+//
+//                omegaCorrection = velocityEstimate != null
+//                        ? headingController.update(poseEstimate.getHeading(), velocityEstimate.getHeading())
+//                        : headingController.update(poseEstimate.getHeading());
+//            }
 
             Pose2d driveVelocity = new Pose2d(
                     movementVector,
