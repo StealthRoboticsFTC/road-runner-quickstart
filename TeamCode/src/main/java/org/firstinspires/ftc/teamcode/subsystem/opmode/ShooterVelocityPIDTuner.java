@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.subsystem.opmode;
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
@@ -11,6 +12,7 @@ import org.firstinspires.ftc.teamcode.subsystem.Shooter;
 import static org.firstinspires.ftc.teamcode.subsystem.Shooter.TARGET_VELOCITY;
 
 @Config
+@Autonomous
 public class ShooterVelocityPIDTuner extends LinearOpMode {
     public static double HIGH_VELOCITY_FRACTION = 1.0;
     public static double LOW_VELOCITY_FRACTION = 0.7;

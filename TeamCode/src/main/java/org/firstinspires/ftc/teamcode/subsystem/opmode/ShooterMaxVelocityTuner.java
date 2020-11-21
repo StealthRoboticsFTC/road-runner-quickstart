@@ -1,10 +1,12 @@
 package org.firstinspires.ftc.teamcode.subsystem.opmode;
 
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.subsystem.Shooter;
 
+@Autonomous
 public class ShooterMaxVelocityTuner extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
