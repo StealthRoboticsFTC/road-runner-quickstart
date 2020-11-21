@@ -1,30 +1,16 @@
 package org.firstinspires.ftc.teamcode.subsystem;
 
 import com.acmerobotics.dashboard.config.Config;
+import com.acmerobotics.roadrunner.control.PIDCoefficients;
+import com.acmerobotics.roadrunner.control.PIDFController;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
-import com.qualcomm.robotcore.hardware.CRServo;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.*;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 
 @Config
 public class Shooter {
-    private HardwareMap hardwareMap;
-    private DcMotor frontShooter;
-    private DcMotor backShooter;
-    private Servo shooterArm;
-    private Servo shooterFlap;
-    private CRServo conveyor;
-
-    private SampleMecanumDrive drive;
-
-//    private InterpLUT flapPositionTable = InterpLUT.createLUT(
-//            Arrays.asList(0.0), Arrays.asList(0.0)
-//    );
-
     public enum State {
         OFF,
         RAMP_UP,
@@ -34,8 +20,14 @@ public class Shooter {
 
     private State shooterState;
 
+    public static PIDCoefficients VELOCITY_PID = new PIDCoefficients(10, 0, 0.3);
+    public static double kV = 0.0;
+    public static double kS = 0.0;
+
+    public static double MAX_VELOCITY = 1.0;
+    public static double TARGET_VELOCITY = MAX_VELOCITY * 0.8;
+
     public static double SHOOTER_STOP_POWER = 0.0;
-    public static double MAX_POWER = 1.0;
     public static double RAMP_UP_TIME = 1.0;
 
     public static double OUT_ARM_POSITION = 0.0;
@@ -46,25 +38,35 @@ public class Shooter {
     public static double CONVEYOR_MOVING_POWER = 0.5;
     public static double CONVEYOR_STOP_POWER = 0.0;
 
-    public static double BASELINE_VOLTAGE = 12.6;
-
     public static Vector2d GOAL_POSITION = new Vector2d(124, 106);
 
-    private double initVoltage = 0.0;
-    private int shotsRemaining = 0;
-    private boolean armIsIn = true;
+    private HardwareMap hardwareMap;
+
+    private DcMotorEx frontShooter;
+    private DcMotorEx backShooter;
+    private Servo shooterArm;
+    private Servo shooterFlap;
+    private CRServo conveyor;
+
+    private SampleMecanumDrive drive;
+
+    private PIDFController velocityController;
+
     private ElapsedTime armWaitTime = new ElapsedTime();
     private ElapsedTime rampTime = new ElapsedTime();
 
+    private int shotsRemaining = 0;
+    private boolean armIsIn = true;
+
     public Shooter(HardwareMap hardwareMap, SampleMecanumDrive drive) {
         this.hardwareMap = hardwareMap;
-        this.frontShooter = hardwareMap.get(DcMotor.class, "frontShooter");
-        this.backShooter = hardwareMap.get(DcMotor.class, "backShooter");
+        this.frontShooter = hardwareMap.get(DcMotorEx.class, "frontShooter");
+        this.backShooter = hardwareMap.get(DcMotorEx.class, "backShooter");
         this.shooterArm = hardwareMap.get(Servo.class, "shooterArm");
         this.shooterFlap = hardwareMap.get(Servo.class, "shooterFlap");
         this.conveyor = hardwareMap.get(CRServo.class, "conveyor");
         this.drive = drive;
-        this.initVoltage = hardwareMap.voltageSensor.iterator().next().getVoltage();
+        this.velocityController = new PIDFController(VELOCITY_PID, kV, 0.0, kS);
         this.stop();
         this.moveArmIn();
     }
@@ -74,18 +76,13 @@ public class Shooter {
             case OFF:
                 break;
             case RAMP_UP:
-                double motorPower = (MAX_POWER / RAMP_UP_TIME) * rampTime.seconds();
+                double motorPower = (TARGET_VELOCITY / RAMP_UP_TIME) * rampTime.seconds();
                 setPower(motorPower);
                 if (rampTime.seconds() > RAMP_UP_TIME) {
                     shooterState = State.RUNNING;
                 }
                 break;
-            case RUNNING:
-                updateFlap();
-                break;
             case FIRING:
-                updateFlap();
-                System.err.println("****** " + armWaitTime.seconds() + " : " + armIsIn);
                 if (armIsIn && armWaitTime.seconds() >= ARM_IN_TIME) {
                     moveArmOut();
                     armWaitTime.reset();
@@ -100,6 +97,11 @@ public class Shooter {
                     shooterState = State.RUNNING;
                     moveArmIn();
                 }
+            case RUNNING:
+                updateFlap();
+
+                double power = velocityController.update(getVelocity()) / MAX_VELOCITY;
+                setPower(power);
                 break;
         }
     }
@@ -108,10 +110,19 @@ public class Shooter {
         return shooterState;
     }
 
-    private void setPower(double power) {
-        double clipPower = Math.min(power, MAX_POWER) * BASELINE_VOLTAGE / initVoltage;
-        frontShooter.setPower(clipPower);
-        backShooter.setPower(clipPower);
+    // TODO: revert publics?
+    public void setVelocity(double velocity) {
+        velocityController.setTargetPosition(velocity);
+        velocityController.setTargetVelocity(velocity);
+    }
+
+    public double getVelocity() {
+        return backShooter.getVelocity();
+    }
+
+    public void setPower(double power) {
+        frontShooter.setPower(power);
+        backShooter.setPower(power);
     }
 
     public void startRampUp() {
@@ -121,8 +132,7 @@ public class Shooter {
     }
 
     public void stop() {
-        frontShooter.setPower(SHOOTER_STOP_POWER);
-        backShooter.setPower(SHOOTER_STOP_POWER);
+        setPower(SHOOTER_STOP_POWER);
         conveyor.setPower(CONVEYOR_STOP_POWER);
         moveArmIn();
         shooterState = State.OFF;
