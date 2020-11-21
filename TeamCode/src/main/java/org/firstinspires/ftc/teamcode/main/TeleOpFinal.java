@@ -30,7 +30,7 @@ public class TeleOpFinal extends LinearOpMode {
     private Intake intake;
 
     private double controlScale(double x, double k) {
-        return (1.0 - k) * x * x * x + k * x;
+        return (1.0 - k) * x * x * x * x * x + k * x;
     }
 
     @Override
