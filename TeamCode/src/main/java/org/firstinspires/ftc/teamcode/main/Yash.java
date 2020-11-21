@@ -20,8 +20,8 @@ import static org.firstinspires.ftc.teamcode.drive.DriveConstants.kV;
 @TeleOp
 public class Yash extends LinearOpMode {
     public static Vector2d GOAL_POSITION = new Vector2d(76.0, 36.0);
-    public static double K_TURN = 0.15;
-    public static double K_TRANSLATION = 0.4;
+    public static double K_TURN = 0.4;
+    public static double K_TRANSLATION = 0.5;
 
     private PIDFController headingController = new PIDFController(SampleMecanumDrive.HEADING_PID);
 
@@ -30,7 +30,7 @@ public class Yash extends LinearOpMode {
     private Intake intake;
 
     private double controlScale(double x, double k) {
-        return (1.0 - k) * x * x * x * x * x + k * x;
+        return (1.0 - k) * Math.pow(x, 9) + k * x;
     }
 
     @Override
