@@ -20,12 +20,12 @@ public class Shooter {
 
     private State shooterState;
 
-    public static PIDCoefficients VELOCITY_PID = new PIDCoefficients(10, 0, 0.3);
-    public static double kV = 0.0;
+    public static PIDCoefficients VELOCITY_PID = new PIDCoefficients(3, 0, 0.025);
+    public static double kV = 1.0;
     public static double kS = 0.0;
 
-    public static double MAX_VELOCITY = 1.0;
-    public static double TARGET_VELOCITY = MAX_VELOCITY * 0.8;
+    public static double MAX_VELOCITY = 2200.0;
+    public static double TARGET_VELOCITY = MAX_VELOCITY * 0.95;
 
     public static double SHOOTER_STOP_POWER = 0.0;
     public static double RAMP_UP_TIME = 1.0;
@@ -76,11 +76,14 @@ public class Shooter {
             case OFF:
                 break;
             case RAMP_UP:
-                double motorPower = (TARGET_VELOCITY / RAMP_UP_TIME) * rampTime.seconds();
-                setPower(motorPower);
+                double targetVelocity = (TARGET_VELOCITY / RAMP_UP_TIME) * rampTime.seconds();
+                setVelocity(targetVelocity);
                 if (rampTime.seconds() > RAMP_UP_TIME) {
                     shooterState = State.RUNNING;
+                    setVelocity(targetVelocity);
                 }
+                double power = velocityController.update(getVelocity()) / MAX_VELOCITY;
+                setPower(power);
                 break;
             case FIRING:
                 if (armIsIn && armWaitTime.seconds() >= ARM_IN_TIME) {
@@ -100,8 +103,8 @@ public class Shooter {
             case RUNNING:
                 updateFlap();
 
-                double power = velocityController.update(getVelocity()) / MAX_VELOCITY;
-                setPower(power);
+                double power1 = velocityController.update(getVelocity()) / MAX_VELOCITY;
+                setPower(power1);
                 break;
         }
     }
