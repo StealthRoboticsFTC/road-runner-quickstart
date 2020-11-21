@@ -1,6 +1,5 @@
 package org.firstinspires.ftc.teamcode.main
 
-import com.acmerobotics.dashboard.config.Config
 import com.acmerobotics.roadrunner.geometry.Pose2d
 import com.acmerobotics.roadrunner.geometry.Vector2d
 import com.acmerobotics.roadrunner.trajectory.Trajectory
@@ -16,7 +15,6 @@ import org.firstinspires.ftc.teamcode.subsystem.Shooter
 import org.firstinspires.ftc.teamcode.subsystem.WobbleArm
 import org.firstinspires.ftc.teamcode.vision.UGContourRingDetector
 import org.firstinspires.ftc.teamcode.vision.UGContourRingPipeline
-import java.util.*
 import kotlin.collections.ArrayList
 
 @Autonomous
@@ -34,7 +32,7 @@ class AutoKt: LinearOpMode() {
         val list = ArrayList<Trajectory>()
 
         val builder2 = drive.trajectoryBuilder(startPose, true)
-        builder2.splineTo(Vector2d(-10.0, 41.0), 180.0.toRadians)
+        builder2.splineTo(Vector2d(-6.0, 41.0), 180.0.toRadians)
         list.add(builder2.build())
 
         val builder3 = drive.trajectoryBuilder(list[list.size - 1].end(), 90.0.toRadians)
@@ -159,11 +157,11 @@ class AutoKt: LinearOpMode() {
 
         drive.followTrajectory(list[1])
         shooter.startRampUp()
-        while (shooter.shooterState == Shooter.State.RAMP_UP) {
+        while (shooter.state == Shooter.State.RAMP_UP) {
             update()
         }
         shooter.fire()
-        while (shooter.shooterState == Shooter.State.FIRING) {
+        while (shooter.state == Shooter.State.FIRING) {
             update()
         }
         sleepUpdate(1500)
@@ -184,6 +182,7 @@ class AutoKt: LinearOpMode() {
 
         drive.followTrajectory(list[4])
         arm.moveToInitial()
+        PoseStorage.pose = drive.poseEstimate
 
 //        val timer = ElapsedTime()
 //        while (!isStopRequested) {

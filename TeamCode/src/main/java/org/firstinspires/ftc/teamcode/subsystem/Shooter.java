@@ -18,8 +18,6 @@ public class Shooter {
         FIRING
     }
 
-    private State shooterState;
-
     public static PIDCoefficients VELOCITY_PID = new PIDCoefficients(3, 0, 0.025);
     public static double kV = 1.0;
     public static double kS = 0.0;
@@ -52,11 +50,15 @@ public class Shooter {
 
     private PIDFController velocityController;
 
+    private State state;
+
     private ElapsedTime armWaitTime = new ElapsedTime();
     private ElapsedTime rampTime = new ElapsedTime();
 
     private int shotsRemaining = 0;
     private boolean armIsIn = true;
+
+    private Shooter() {}
 
     public Shooter(HardwareMap hardwareMap, SampleMecanumDrive drive) {
         this.hardwareMap = hardwareMap;
@@ -72,18 +74,21 @@ public class Shooter {
     }
 
     public void update() {
-        switch (shooterState) {
+        if (state != State.OFF) {
+            double power = velocityController.update(getVelocity()) / MAX_VELOCITY;
+            setPower(power);
+        }
+
+        switch (state) {
             case OFF:
                 break;
             case RAMP_UP:
                 double targetVelocity = (TARGET_VELOCITY / RAMP_UP_TIME) * rampTime.seconds();
                 setVelocity(targetVelocity);
                 if (rampTime.seconds() > RAMP_UP_TIME) {
-                    shooterState = State.RUNNING;
+                    state = State.RUNNING;
                     setVelocity(targetVelocity);
                 }
-                double power = velocityController.update(getVelocity()) / MAX_VELOCITY;
-                setPower(power);
                 break;
             case FIRING:
                 if (armIsIn && armWaitTime.seconds() >= ARM_IN_TIME) {
@@ -97,20 +102,17 @@ public class Shooter {
                 }
 
                 if (shotsRemaining == 0) {
-                    shooterState = State.RUNNING;
+                    state = State.RUNNING;
                     moveArmIn();
                 }
             case RUNNING:
                 updateFlap();
-
-                double power1 = velocityController.update(getVelocity()) / MAX_VELOCITY;
-                setPower(power1);
                 break;
         }
     }
 
-    public State getShooterState() {
-        return shooterState;
+    public State getState() {
+        return state;
     }
 
     // TODO: revert publics?
@@ -131,22 +133,22 @@ public class Shooter {
     public void startRampUp() {
         rampTime.reset();
         conveyor.setPower(CONVEYOR_MOVING_POWER);
-        shooterState = State.RAMP_UP;
+        state = State.RAMP_UP;
     }
 
     public void stop() {
         setPower(SHOOTER_STOP_POWER);
         conveyor.setPower(CONVEYOR_STOP_POWER);
         moveArmIn();
-        shooterState = State.OFF;
+        state = State.OFF;
     }
 
     public void fire() {
-        if (shooterState == State.RUNNING) {
+        if (state == State.RUNNING) {
             moveArmIn();
             shotsRemaining = 3;
             armWaitTime.reset();
-            shooterState = State.FIRING;
+            state = State.FIRING;
         }
     }
 

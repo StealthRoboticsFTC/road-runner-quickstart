@@ -25,6 +25,8 @@ public class Intake {
     private HardwareMap hardwareMap;
     private State state = State.OFF;
 
+    private Intake() {}
+
     public Intake(HardwareMap hardwareMap) {
         this.hardwareMap = hardwareMap;
         this.leftIntake = hardwareMap.get(DcMotor.class, "leftIntake");

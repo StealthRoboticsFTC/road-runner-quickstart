@@ -6,6 +6,12 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 @Config
 public class WobbleArm {
+    public enum ArmPosition {
+        INITIAL,
+        CARRY,
+        DROPOFF,
+        PICKUP
+    }
 
     public static double ARM_INITIAL_POSITION = 0.6766;
     public static double ARM_CARRY_POSITION = 0.5;
@@ -14,22 +20,15 @@ public class WobbleArm {
     public static double GRIP_OPEN_POSITION=0.18;
     public static double GRIP_CLOSE_POSITION=0.55;
 
-    public enum ArmPosition {
-        INITIAL,
-        CARRY,
-        DROPOFF,
-        PICKUP
-    }
-
     private Servo arm;
     private Servo pincher;
     private HardwareMap hardwareMap;
     private ArmPosition armPosition;
     private boolean gripOpen;
 
-    private WobbleArm(){}
+    private WobbleArm() {}
 
-    public WobbleArm(HardwareMap hardwareMap){
+    public WobbleArm(HardwareMap hardwareMap) {
         this.hardwareMap = hardwareMap;
         this.arm = hardwareMap.get(Servo.class, "arm");
         this.pincher = hardwareMap.get(Servo.class, "pincher");

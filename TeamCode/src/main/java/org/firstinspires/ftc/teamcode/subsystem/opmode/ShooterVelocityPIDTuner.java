@@ -32,7 +32,7 @@ public class ShooterVelocityPIDTuner extends LinearOpMode {
 
         shooter.startRampUp();
 
-        while (!isStopRequested() && shooter.getShooterState() != Shooter.State.RUNNING) {
+        while (!isStopRequested() && shooter.getState() != Shooter.State.RUNNING) {
             shooter.update();
         }
 
