@@ -26,12 +26,12 @@ public class Shooter {
     public static double TARGET_VELOCITY = MAX_VELOCITY * 0.92;
 
     public static double SHOOTER_STOP_POWER = 0.0;
-    public static double RAMP_UP_TIME = 1.0;
+    public static double RAMP_UP_TIME = 0.5;
 
     public static double OUT_ARM_POSITION = 0.0;
     public static double IN_ARM_POSITION = 0.12;
     public static double ARM_OUT_TIME = 0.1;
-    public static double ARM_IN_TIME = 0.9;
+    public static double ARM_IN_TIME = 0.7;
 
     public static double CONVEYOR_MOVING_POWER = 0.5;
     public static double CONVEYOR_STOP_POWER = 0.0;
@@ -87,7 +87,7 @@ public class Shooter {
                 setVelocity(targetVelocity);
                 if (rampTime.seconds() > RAMP_UP_TIME) {
                     state = State.RUNNING;
-                    setVelocity(targetVelocity);
+                    setVelocity(TARGET_VELOCITY);
                 }
                 break;
             case FIRING:
@@ -145,7 +145,7 @@ public class Shooter {
 
     public void fire() {
         if (state == State.RUNNING) {
-            moveArmIn();
+            moveArmOut();
             shotsRemaining = 3;
             armWaitTime.reset();
             state = State.FIRING;
