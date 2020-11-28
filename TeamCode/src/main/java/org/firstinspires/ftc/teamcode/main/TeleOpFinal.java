@@ -78,14 +78,14 @@ public class TeleOpFinal extends LinearOpMode {
                     : 1.0;
 
             double omegaCorrection = 0.0;
-//            if (gamepad2.b || gamepad1.left_trigger > 0.5 || gamepad1.right_trigger > 0.5) {
-//                double theta = GOAL_POSITION.minus(poseEstimate.vec()).angle();
-//                headingController.setTargetPosition(theta);
-//
-//                omegaCorrection = velocityEstimate != null
-//                        ? headingController.update(poseEstimate.getHeading(), velocityEstimate.getHeading())
-//                        : headingController.update(poseEstimate.getHeading());
-//            }
+            if (gamepad2.b || gamepad1.left_trigger > 0.5 || gamepad1.right_trigger > 0.5) {
+                double theta = GOAL_POSITION.minus(poseEstimate.vec()).angle();
+                headingController.setTargetPosition(theta);
+
+                omegaCorrection = velocityEstimate != null
+                        ? headingController.update(poseEstimate.getHeading(), velocityEstimate.getHeading())
+                        : headingController.update(poseEstimate.getHeading());
+            }
 
             Pose2d driveVelocity = new Pose2d(
                     movementVector,
