@@ -28,6 +28,7 @@ public class TeleOpFinal extends LinearOpMode {
     private WobbleArm wobbleArm;
     private Shooter shooter;
     private Intake intake;
+    private AutonomousPowerShot aps;
 
     private double controlScale(double x, double k) {
         return (1.0 - k) * Math.pow(x, 9) + k * x;
@@ -44,6 +45,7 @@ public class TeleOpFinal extends LinearOpMode {
         wobbleArm = new WobbleArm(hardwareMap);
         shooter = new Shooter(hardwareMap, drive);
         intake = new Intake(hardwareMap);
+        aps = new AutonomousPowerShot(shooter, drive);
 
         waitForStart();
 
@@ -128,7 +130,7 @@ public class TeleOpFinal extends LinearOpMode {
             }
 
             if (gamepad2.right_trigger > 0.0 && shooter.getState() != Shooter.State.FIRING) {
-                shooter.fire();
+                shooter.fire(3);
             }
 
             if (gamepad2.right_bumper && !hasRBBeenPressed) {

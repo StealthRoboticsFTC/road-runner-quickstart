@@ -143,10 +143,10 @@ public class Shooter {
         state = State.OFF;
     }
 
-    public void fire() {
+    public void fire(int shotsToFire) {
         if (state == State.RUNNING) {
             moveArmOut();
-            shotsRemaining = 3;
+            shotsRemaining = shotsToFire;
             armWaitTime.reset();
             state = State.FIRING;
         }

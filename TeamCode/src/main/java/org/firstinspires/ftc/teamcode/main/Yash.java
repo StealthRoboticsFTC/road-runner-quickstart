@@ -128,7 +128,7 @@ public class Yash extends LinearOpMode {
             }
 
             if (gamepad2.right_trigger > 0.0 && shooter.getState() != Shooter.State.FIRING) {
-                shooter.fire();
+                shooter.fire(3);
             }
 
             if (gamepad2.right_bumper && !hasRBBeenPressed) {
