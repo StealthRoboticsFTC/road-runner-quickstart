@@ -9,6 +9,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
+import org.firstinspires.ftc.teamcode.subsystem.AutonomousPowerShot;
 import org.firstinspires.ftc.teamcode.subsystem.Intake;
 import org.firstinspires.ftc.teamcode.subsystem.Shooter;
 import org.firstinspires.ftc.teamcode.subsystem.WobbleArm;
@@ -28,6 +29,7 @@ public class TeleOpFinal extends LinearOpMode {
     private WobbleArm wobbleArm;
     private Shooter shooter;
     private Intake intake;
+    private AutonomousPowerShot aps;
 
     private double controlScale(double x, double k) {
         return (1.0 - k) * Math.pow(x, 9) + k * x;
@@ -44,6 +46,7 @@ public class TeleOpFinal extends LinearOpMode {
         wobbleArm = new WobbleArm(hardwareMap);
         shooter = new Shooter(hardwareMap, drive);
         intake = new Intake(hardwareMap);
+        aps = new AutonomousPowerShot(shooter, drive);
 
         waitForStart();
 
@@ -58,6 +61,7 @@ public class TeleOpFinal extends LinearOpMode {
         while (!isStopRequested()) {
             drive.update();
             shooter.update();
+            aps.update();
 
             Pose2d poseEstimate = drive.getPoseEstimate();
             Pose2d velocityEstimate = drive.getPoseVelocity();
@@ -92,7 +96,17 @@ public class TeleOpFinal extends LinearOpMode {
                     controlScale(-gamepad1.right_stick_x, K_TURN) + omegaCorrection * kV * TRACK_WIDTH
             ).times(scaleFactor);
 
-            drive.setWeightedDrivePower(driveVelocity);
+            if((driveVelocity.getX() != 0 || driveVelocity.getY() != 0 || driveVelocity.getHeading() != 0) && aps.getState() != AutonomousPowerShot.State.OFF) {
+                aps.stop();
+            }
+
+            if(aps.getState() == AutonomousPowerShot.State.OFF) {
+                drive.setWeightedDrivePower(driveVelocity);
+            }
+
+            if (gamepad1.b && aps.getState() == AutonomousPowerShot.State.OFF) {
+                aps.start();
+            }
 
             if (gamepad2.x && !isXButtonDown) {
                 switch(wobbleArm.getArmPosition()){
@@ -128,7 +142,7 @@ public class TeleOpFinal extends LinearOpMode {
             }
 
             if (gamepad2.right_trigger > 0.0 && shooter.getState() != Shooter.State.FIRING) {
-                shooter.fire();
+                shooter.fire(3);
             }
 
             if (gamepad2.right_bumper && !hasRBBeenPressed) {

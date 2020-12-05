@@ -161,7 +161,7 @@ class AutoKt: LinearOpMode() {
         while (shooter.state == Shooter.State.RAMP_UP) {
             update()
         }
-        shooter.fire()
+        shooter.fire(3)
         while (shooter.state == Shooter.State.FIRING) {
             update()
         }
