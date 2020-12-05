@@ -86,6 +86,7 @@ public class AutonomousPowerShot {
                         state = State.OFF;
                     } else {
                         followTrajectory();
+                        state=State.MOVING;
                     }
                 }
                 break;
