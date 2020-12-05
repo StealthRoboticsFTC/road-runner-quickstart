@@ -9,6 +9,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
+import org.firstinspires.ftc.teamcode.subsystem.AutonomousPowerShot;
 import org.firstinspires.ftc.teamcode.subsystem.Intake;
 import org.firstinspires.ftc.teamcode.subsystem.Shooter;
 import org.firstinspires.ftc.teamcode.subsystem.WobbleArm;
@@ -60,6 +61,7 @@ public class TeleOpFinal extends LinearOpMode {
         while (!isStopRequested()) {
             drive.update();
             shooter.update();
+            aps.update();
 
             Pose2d poseEstimate = drive.getPoseEstimate();
             Pose2d velocityEstimate = drive.getPoseVelocity();
@@ -94,7 +96,17 @@ public class TeleOpFinal extends LinearOpMode {
                     controlScale(-gamepad1.right_stick_x, K_TURN) + omegaCorrection * kV * TRACK_WIDTH
             ).times(scaleFactor);
 
-            drive.setWeightedDrivePower(driveVelocity);
+            if((driveVelocity.getX() != 0 || driveVelocity.getY() != 0 || driveVelocity.getHeading() != 0) && aps.getState() != AutonomousPowerShot.State.OFF) {
+                aps.stop();
+            }
+
+            if(aps.getState() == AutonomousPowerShot.State.OFF) {
+                drive.setWeightedDrivePower(driveVelocity);
+            }
+
+            if (gamepad1.b && aps.getState() == AutonomousPowerShot.State.OFF) {
+                aps.start();
+            }
 
             if (gamepad2.x && !isXButtonDown) {
                 switch(wobbleArm.getArmPosition()){

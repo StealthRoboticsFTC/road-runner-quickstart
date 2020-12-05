@@ -1,5 +1,12 @@
 package org.firstinspires.ftc.teamcode.subsystem;
 
+import com.acmerobotics.roadrunner.geometry.Pose2d;
+import com.acmerobotics.roadrunner.trajectory.Trajectory;
+import com.acmerobotics.roadrunner.trajectory.TrajectoryBuilder;
+import com.qualcomm.robotcore.util.ElapsedTime;
+
+import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
+
 /*
 When a certain set of buttons are pressed, the robot will move from anywhere on the field to
 a preset series of points on the field starting with a point where it will shoot one ring and knock
@@ -23,24 +30,103 @@ middle: (-10.3522, 16.8147)
 right: (-11.122, 7.264)
  */
 
+/*
+Line to add a trajectory
+drive.trajectoryBuilder(drive.getPoseEstimate()).lineToLinearHeading(pose1).build()
+ */
+
 public class AutonomousPowerShot {
+    public enum State {
+        OFF,
+        MOVING,
+        SHOOTING,
+        WAITING
+    }
+
+    private double SHOOTING_SECONDS = 0.5;
+
+    private Pose2d ZERO_POSE = new Pose2d(-10.3522, 23.366);
+    private Pose2d ONE_POSE = new Pose2d(-10.3522, 16.8147);
+    private Pose2d TWO_POSE = new Pose2d(-11.2122, 7.264);
+
+    private State state = State.OFF;
+
+    private ElapsedTime timer = new ElapsedTime();
+
     private Shooter shooter;
     private SampleMecanumDrive drive;
+
+    private int shotNumber = 0;
 
     public AutonomousPowerShot(Shooter shooter, SampleMecanumDrive drive) {
         this.shooter = shooter;
         this.drive = drive;
     }
 
-    public void run() {
-        //Do roadrunner here
-        shooter.startRampUp();
-        shooter.fire(1);
-        //Roadrunner
-        shooter.fire(1);
-        //Roadrunner
-        shooter.fire(1);
-        shooter.stop();
+    public void update() {
+        switch (state) {
+            case OFF:
+                break;
+            case MOVING:
+                if(! drive.isBusy()) {
+                    state = State.SHOOTING;
+                    shooter.fire(1);
+                }
+                break;
+            case SHOOTING:
+                if(shooter.getState() != Shooter.State.FIRING) {
+                    state = State.WAITING;
+                    timer.reset();
+                }
+                break;
+            case WAITING:
+                if(timer.seconds() > SHOOTING_SECONDS) {
+                    shotNumber++;
+                    if(shotNumber > 2) {
+                        state = State.OFF;
+                    } else {
+                        followTrajectory();
+                    }
+                }
+                break;
+        }
+    }
+
+    public void start() {
+        state = State.MOVING;
+        shotNumber = 0;
+        followTrajectory();
+    }
+
+    public void stop() {
+        state = State.OFF;
+        drive.stopFollowing();
+    }
+
+    private void followTrajectory() {
+        Pose2d targetPose;
+        switch (shotNumber) {
+            case 1:
+                targetPose = ONE_POSE;
+                break;
+            case 2:
+                targetPose = TWO_POSE;
+                break;
+            default:
+                targetPose = ZERO_POSE;
+                break;
+        }
+
+        Trajectory trajectory = drive.trajectoryBuilder(drive.getPoseEstimate())
+                .lineToSplineHeading(targetPose)
+                .build();
+
+        drive.followTrajectoryAsync(trajectory);
+
+    }
+
+    public State getState() {
+        return state;
     }
 
 }

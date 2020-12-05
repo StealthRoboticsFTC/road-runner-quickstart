@@ -304,6 +304,10 @@ public class SampleMecanumDrive extends MecanumDrive {
         dashboard.sendTelemetryPacket(packet);
     }
 
+    public void stopFollowing() {
+        mode = Mode.IDLE;
+    }
+
     public void waitForIdle() {
         while (!Thread.currentThread().isInterrupted() && isBusy()) {
             update();
