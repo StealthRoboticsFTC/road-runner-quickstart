@@ -45,9 +45,16 @@ public class AutonomousPowerShot {
 
     private double SHOOTING_SECONDS = 0.5;
 
-    private Pose2d ZERO_POSE = new Pose2d(-10.3522, 23.366);
-    private Pose2d ONE_POSE = new Pose2d(-10.3522, 16.8147);
-    private Pose2d TWO_POSE = new Pose2d(-11.2122, 7.264);
+    private double ZERO_POSE_X = -10.3522;
+    private double ZERO_POSE_Y = 23.366;
+    private double ONE_POSE_X = -10.3522;
+    private double ONE_POSE_Y = 16.8147;
+    private double TWO_POSE_X = -11.2122;
+    private double TWO_POSE_Y = 7.264;
+
+    private Pose2d ZERO_POSE = new Pose2d(ZERO_POSE_X, ZERO_POSE_Y);
+    private Pose2d ONE_POSE = new Pose2d(ONE_POSE_X, ONE_POSE_Y);
+    private Pose2d TWO_POSE = new Pose2d(TWO_POSE_X, TWO_POSE_Y);
 
     private State state = State.OFF;
 
