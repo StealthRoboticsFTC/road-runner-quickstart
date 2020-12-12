@@ -51,11 +51,11 @@ public class AutonomousPowerShot {
         WAITING
     }
 
-    private double SHOOTING_SECONDS = 0.5;
+    private double SHOOTING_SECONDS = 0.7;
 
-    private Pose2d ZERO_POSE = new Pose2d(-10.3522, 23.366);
-    private Pose2d ONE_POSE = new Pose2d(-10.3522, 16.8147);
-    private Pose2d TWO_POSE = new Pose2d(-11.2122, 7.264);
+    private Pose2d ZERO_POSE = new Pose2d(-18, 24.366);
+    private Pose2d ONE_POSE = new Pose2d(-18.5, 17.8147);
+    private Pose2d TWO_POSE = new Pose2d(-19, 9.50);
 
     private State state = State.OFF;
 
@@ -131,6 +131,7 @@ public class AutonomousPowerShot {
                         state = State.OFF;
                     } else {
                         followTrajectory();
+                        state=State.MOVING;
                     }
                 }
                 break;
