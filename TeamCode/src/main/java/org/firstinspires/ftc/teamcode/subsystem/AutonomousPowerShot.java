@@ -1,16 +1,12 @@
 package org.firstinspires.ftc.teamcode.subsystem;
 
-import android.graphics.drawable.GradientDrawable;
-
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
-import com.acmerobotics.roadrunner.trajectory.TrajectoryBuilder;
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 
 /*
@@ -63,18 +59,18 @@ public class AutonomousPowerShot {
 
     private Shooter shooter;
     private SampleMecanumDrive drive;
-    private DistanceSensor leftSensor;
-    private DistanceSensor rightSensor;
+    private DistanceSensor backSensor;
+    private DistanceSensor frontSensor;
     private BNO055IMU imu;
 
     private int shotNumber = 0;
 
-    public AutonomousPowerShot(Shooter shooter, SampleMecanumDrive drive, DistanceSensor leftSensor,
-                               DistanceSensor rightSensor, BNO055IMU imu) {
+    public AutonomousPowerShot(Shooter shooter, SampleMecanumDrive drive, DistanceSensor backSensor,
+                               DistanceSensor frontSensor, BNO055IMU imu) {
         this.shooter = shooter;
         this.drive = drive;
-        this.leftSensor = leftSensor;
-        this.rightSensor = rightSensor;
+        this.backSensor = backSensor;
+        this.frontSensor = frontSensor;
         this.imu = imu;
     }
 
@@ -112,15 +108,15 @@ public class AutonomousPowerShot {
 //                break;
             case ADJUSTING_DISTANCE:
                 if(! drive.isBusy()) {
-                    double difference = leftSensor.getDistance(DistanceUnit.INCH) - rightSensor.getDistance(DistanceUnit.INCH);
-                    System.out.println("difference = " + difference);
-                    if (Math.abs(difference) < 0.25) {
+                    double difference = backSensor.getDistance(DistanceUnit.INCH) - frontSensor.getDistance(DistanceUnit.INCH);
+//                    System.out.println("difference = " + difference);
+                    if (Math.abs(difference) < 5) {
                         state = State.SHOOTING;
                         shooter.fire(1);
                     } else if (difference > 0) {
-                        drive.turn(Math.toRadians(1));
+                        drive.turn(Math.toRadians(0.5));
                     } else if (difference < 0) {
-                        drive.turn(Math.toRadians(-0.1));
+                        drive.turn(Math.toRadians(-0.5));
                     }
                 }
                 break;
