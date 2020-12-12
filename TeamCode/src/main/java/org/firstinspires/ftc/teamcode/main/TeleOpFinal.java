@@ -4,9 +4,11 @@ import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.control.PIDFController;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
+import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DistanceSensor;
 
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.subsystem.AutonomousPowerShot;
@@ -31,6 +33,10 @@ public class TeleOpFinal extends LinearOpMode {
     private Intake intake;
     private AutonomousPowerShot aps;
 
+    private DistanceSensor leftSensor;
+    private DistanceSensor rightSensor;
+    private BNO055IMU imu;
+
     private double controlScale(double x, double k) {
         return (1.0 - k) * Math.pow(x, 9) + k * x;
     }
@@ -46,7 +52,12 @@ public class TeleOpFinal extends LinearOpMode {
         wobbleArm = new WobbleArm(hardwareMap);
         shooter = new Shooter(hardwareMap, drive);
         intake = new Intake(hardwareMap);
-        aps = new AutonomousPowerShot(shooter, drive);
+
+        leftSensor = hardwareMap.get(DistanceSensor.class, "leftSensor");
+        rightSensor = hardwareMap.get(DistanceSensor.class, "rightSensor");
+        imu = hardwareMap.get(BNO055IMU.class, "imu");
+
+        aps = new AutonomousPowerShot(shooter, drive, leftSensor, rightSensor, imu);
 
         waitForStart();
 
