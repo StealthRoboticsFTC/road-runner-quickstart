@@ -85,7 +85,7 @@ public class AutonomousPowerShot {
                 break;
             case MOVING:
                 if(! drive.isBusy()) {
-                    state = State.ADJUSTING_IMU;
+                    state = State.ADJUSTING_DISTANCE;
 //                    shooter.fire(1);
                 }
                 break;
@@ -95,21 +95,21 @@ public class AutonomousPowerShot {
                     timer.reset();
                 }
                 break;
-            case ADJUSTING_IMU:
-                if(! drive.isBusy()) {
-                    Orientation angularOrientation = imu.getAngularOrientation();
-                    System.out.println("************Angular orientation = " + angularOrientation.firstAngle);
-                    if (angularOrientation.firstAngle <= 1.5 || angularOrientation.firstAngle >= 358.5) {
-                        state = State.ADJUSTING_DISTANCE;
-                    } else if (angularOrientation.firstAngle > 0 && angularOrientation.firstAngle <= 180) {
-                        drive.turn(Math.toRadians(-1 * angularOrientation.firstAngle));
-                        System.out.println("************turning left");
-                    } else if (angularOrientation.firstAngle > 180) {
-                        drive.turn(Math.toRadians( - angularOrientation.firstAngle));
-                        System.out.println("***********turning right");
-                    }
-                }
-                break;
+//            case ADJUSTING_IMU:
+//                if(! drive.isBusy()) {
+//                    Orientation angularOrientation = imu.getAngularOrientation();
+//                    System.out.println("************Angular orientation = " + angularOrientation.firstAngle);
+//                    if (angularOrientation.firstAngle <= 1.5 || angularOrientation.firstAngle >= 358.5) {
+//                        state = State.ADJUSTING_DISTANCE;
+//                    } else if (angularOrientation.firstAngle > 0 && angularOrientation.firstAngle <= 180) {
+//                        drive.turn(Math.toRadians(-1 * angularOrientation.firstAngle));
+//                        System.out.println("************turning left");
+//                    } else if (angularOrientation.firstAngle > 180) {
+//                        drive.turn(Math.toRadians( - angularOrientation.firstAngle));
+//                        System.out.println("***********turning right");
+//                    }
+//                }
+//                break;
             case ADJUSTING_DISTANCE:
                 if(! drive.isBusy()) {
                     double difference = leftSensor.getDistance(DistanceUnit.INCH) - rightSensor.getDistance(DistanceUnit.INCH);
