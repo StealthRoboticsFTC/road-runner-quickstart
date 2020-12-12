@@ -113,7 +113,7 @@ public class AutonomousPowerShot {
             case ADJUSTING_DISTANCE:
                 if(! drive.isBusy()) {
                     double difference = leftSensor.getDistance(DistanceUnit.INCH) - rightSensor.getDistance(DistanceUnit.INCH);
-                    System.out.println("difference = " + difference)
+                    System.out.println("difference = " + difference);
                     if (Math.abs(difference) < 0.25) {
                         state = State.SHOOTING;
                         shooter.fire(1);
