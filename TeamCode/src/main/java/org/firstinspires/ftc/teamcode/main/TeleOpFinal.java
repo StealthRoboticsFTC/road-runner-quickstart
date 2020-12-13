@@ -34,8 +34,8 @@ public class TeleOpFinal extends LinearOpMode {
     private Intake intake;
     private AutonomousPowerShot aps;
 
-    private DistanceSensor leftSensor;
-    private DistanceSensor rightSensor;
+    private DistanceSensor backSensor;
+    private DistanceSensor frontSensor;
     private BNO055IMU imu;
 
     private double controlScale(double x, double k) {
@@ -54,11 +54,11 @@ public class TeleOpFinal extends LinearOpMode {
         shooter = new Shooter(hardwareMap, drive);
         intake = new Intake(hardwareMap);
 
-        leftSensor = hardwareMap.get(DistanceSensor.class, "leftSensor");
-        rightSensor = hardwareMap.get(DistanceSensor.class, "rightSensor");
+        backSensor = hardwareMap.get(DistanceSensor.class, "backSensor");
+        frontSensor = hardwareMap.get(DistanceSensor.class, "frontSensor");
         imu = hardwareMap.get(BNO055IMU.class, "imu");
 
-        aps = new AutonomousPowerShot(shooter, drive, leftSensor, rightSensor, imu);
+        aps = new AutonomousPowerShot(shooter, drive, backSensor, frontSensor, imu);
 
         waitForStart();
 

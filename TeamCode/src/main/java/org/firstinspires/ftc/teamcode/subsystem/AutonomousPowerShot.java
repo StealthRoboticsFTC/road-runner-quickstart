@@ -1,5 +1,9 @@
 package org.firstinspires.ftc.teamcode.subsystem;
 
+import com.acmerobotics.dashboard.config.Config;
+import com.acmerobotics.roadrunner.control.PIDCoefficients;
+import com.acmerobotics.roadrunner.control.PIDFController;
+import com.acmerobotics.roadrunner.drive.DriveSignal;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.hardware.bosch.BNO055IMU;
@@ -37,6 +41,7 @@ Line to add a trajectory
 drive.trajectoryBuilder(drive.getPoseEstimate()).lineToLinearHeading(pose1).build()
  */
 
+@Config
 public class AutonomousPowerShot {
     public enum State {
         OFF,
@@ -47,15 +52,20 @@ public class AutonomousPowerShot {
         WAITING
     }
 
-    private double SHOOTING_SECONDS = 0.7;
+    private double SHOOTING_SECONDS = 2.0;
 
-    private Pose2d ZERO_POSE = new Pose2d(-18, 24.366);
-    private Pose2d ONE_POSE = new Pose2d(-18.5, 17.8147);
-    private Pose2d TWO_POSE = new Pose2d(-19, 9.50);
+    public PIDCoefficients coefficients = new PIDCoefficients(0.05, 0.1, 0);
+    private PIDFController pidControl= new PIDFController(coefficients);
+
+    private Pose2d ZERO_POSE = new Pose2d(-17.25, 22.366);
+    private Pose2d ONE_POSE = new Pose2d(-19.25, 14);
+    private Pose2d TWO_POSE = new Pose2d(-19.5, 8.0);
 
     private State state = State.OFF;
 
     private ElapsedTime timer = new ElapsedTime();
+
+    private int movesToGo = 2;
 
     private Shooter shooter;
     private SampleMecanumDrive drive;
@@ -76,6 +86,8 @@ public class AutonomousPowerShot {
 
     public void update() {
         System.out.println("**********state = " + state);
+        System.out.println("back sensor = " + backSensor.getDistance(DistanceUnit.INCH));
+        System.out.println("front sensor = " + frontSensor.getDistance(DistanceUnit.INCH));
         switch (state) {
             case OFF:
                 break;
@@ -108,26 +120,41 @@ public class AutonomousPowerShot {
 //                break;
             case ADJUSTING_DISTANCE:
                 if(! drive.isBusy()) {
-                    double difference = backSensor.getDistance(DistanceUnit.INCH) - frontSensor.getDistance(DistanceUnit.INCH);
-//                    System.out.println("difference = " + difference);
-                    if (Math.abs(difference) < 5) {
+                    double difference = frontSensor.getDistance(DistanceUnit.INCH) -
+                            backSensor.getDistance(DistanceUnit.INCH);
+                    System.out.println("***********difference = " + difference);
+
+                    double turnSpeed = pidControl.update(difference);
+
+                    Pose2d velocityPose = new Pose2d(0, 0, turnSpeed);
+                    DriveSignal speed = new DriveSignal(velocityPose);
+                    drive.setDriveSignal(speed);
+                    drive.update();
+
+                    if (Math.abs(difference) < 0.1) {
                         state = State.SHOOTING;
                         shooter.fire(1);
-                    } else if (difference > 0) {
-                        drive.turn(Math.toRadians(0.5));
-                    } else if (difference < 0) {
-                        drive.turn(Math.toRadians(-0.5));
+                        shotNumber++;
+                        Pose2d zero = new Pose2d(0, 0, 0);
+                        DriveSignal zeroSignal = new DriveSignal(zero);
+                        drive.setDriveSignal(zeroSignal);
+                        pidControl.reset();
+
                     }
+//                     else if (difference > 0) {
+//                        drive.turn(Math.toRadians(0.05));
+//                    } else if (difference < 0) {
+//                        drive.turn(Math.toRadians(-0.05));
+//                    }
                 }
                 break;
             case WAITING:
                 if(timer.seconds() > SHOOTING_SECONDS) {
-                    shotNumber++;
                     if(shotNumber > 2) {
                         state = State.OFF;
                     } else {
                         followTrajectory();
-                        state=State.MOVING;
+                        state = State.MOVING;
                     }
                 }
                 break;
@@ -147,22 +174,20 @@ public class AutonomousPowerShot {
 
     private void followTrajectory() {
         Pose2d targetPose;
-        targetPose = ZERO_POSE;
-//        switch (shotNumber) {
-//            case 1:
-//                targetPose = ONE_POSE;
-//                break;
-//            case 2:
-//                targetPose = TWO_POSE;
-//                break;
-//            default:
-//                targetPose = ZERO_POSE;
-//                break;
-//        }
+        switch (shotNumber) {
+            case 1:
+                targetPose = ONE_POSE;
+                break;
+            case 2:
+                targetPose = TWO_POSE;
+                break;
+            default:
+                targetPose = ZERO_POSE;
+                break;
+        }
 
         Trajectory trajectory = drive.trajectoryBuilder(drive.getPoseEstimate())
-                .lineToSplineHeading(targetPose)
-                .build();
+                .lineToSplineHeading(targetPose).build();
 
         drive.followTrajectoryAsync(trajectory);
 
