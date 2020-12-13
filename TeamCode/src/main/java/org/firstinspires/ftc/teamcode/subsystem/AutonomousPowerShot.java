@@ -10,6 +10,7 @@ import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import com.qualcomm.robotcore.util.MovingStatistics;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 
@@ -53,9 +54,10 @@ public class AutonomousPowerShot {
     }
 
     private double SHOOTING_SECONDS = 2.0;
+    private int AVERAGING_SAMPLES = 6;
 
     public PIDCoefficients coefficients = new PIDCoefficients(0.05, 0.1, 0);
-    private PIDFController pidControl= new PIDFController(coefficients);
+    private PIDFController pidControl = new PIDFController(coefficients);
 
     private Pose2d ZERO_POSE = new Pose2d(-17.25, 22.366);
     private Pose2d ONE_POSE = new Pose2d(-19.25, 14);
@@ -71,6 +73,8 @@ public class AutonomousPowerShot {
     private SampleMecanumDrive drive;
     private DistanceSensor backSensor;
     private DistanceSensor frontSensor;
+    private MovingStatistics backSensorSamples;
+    private MovingStatistics frontSensorSamples;
     private BNO055IMU imu;
 
     private int shotNumber = 0;
@@ -81,6 +85,8 @@ public class AutonomousPowerShot {
         this.drive = drive;
         this.backSensor = backSensor;
         this.frontSensor = frontSensor;
+        this.backSensorSamples = new MovingStatistics(AVERAGING_SAMPLES);
+        this.frontSensorSamples = new MovingStatistics(AVERAGING_SAMPLES);
         this.imu = imu;
     }
 
@@ -120,8 +126,10 @@ public class AutonomousPowerShot {
 //                break;
             case ADJUSTING_DISTANCE:
                 if(! drive.isBusy()) {
-                    double difference = frontSensor.getDistance(DistanceUnit.INCH) -
-                            backSensor.getDistance(DistanceUnit.INCH);
+                    frontSensorSamples.add(frontSensor.getDistance(DistanceUnit.INCH));
+                    backSensorSamples.add(backSensor.getDistance(DistanceUnit.INCH));
+
+                    double difference = frontSensorSamples.getMean() - backSensorSamples.getMean();
                     System.out.println("***********difference = " + difference);
 
                     double turnSpeed = pidControl.update(difference);
