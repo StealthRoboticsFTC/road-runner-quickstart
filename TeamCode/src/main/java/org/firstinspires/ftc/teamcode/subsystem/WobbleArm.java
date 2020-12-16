@@ -15,7 +15,7 @@ public class WobbleArm {
 
     public static double ARM_INITIAL_POSITION = 0.34;
     public static double ARM_CARRY_POSITION = 0.5;
-    public static double ARM_DROPOFF_POSITION = 0.57;
+    public static double ARM_DROPOFF_POSITION = 0.6;
     public static double ARM_PICKUP_POSITION = 0.685;
     public static double GRIP_OPEN_POSITION=0.55;
     public static double GRIP_CLOSE_POSITION=0.2;

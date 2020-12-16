@@ -137,7 +137,6 @@ public class AutonomousPowerShot {
                     Pose2d velocityPose = new Pose2d(0, 0, turnSpeed);
                     DriveSignal speed = new DriveSignal(velocityPose);
                     drive.setDriveSignal(speed);
-                    drive.update();
 
                     if (Math.abs(difference) < 0.1) {
                         state = State.SHOOTING;
@@ -147,7 +146,6 @@ public class AutonomousPowerShot {
                         DriveSignal zeroSignal = new DriveSignal(zero);
                         drive.setDriveSignal(zeroSignal);
                         pidControl.reset();
-
                     }
 //                     else if (difference > 0) {
 //                        drive.turn(Math.toRadians(0.05));

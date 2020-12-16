@@ -33,14 +33,14 @@ class AutoKt: LinearOpMode() {
         val list = ArrayList<Trajectory>()
 
         val builder2 = drive.trajectoryBuilder(startPose, true)
-        builder2.splineTo(Vector2d(-10.0, 41.0), 180.0.toRadians)
+        builder2.splineTo(Vector2d(-6.0, 43.0), 180.0.toRadians)
         list.add(builder2.build())
 
         val builder3 = drive.trajectoryBuilder(list[list.size - 1].end(), 90.0.toRadians)
         builder3
-                .splineToSplineHeading(Pose2d(-28.0, 51.0, 180.0.toRadians), 180.0.toRadians)
+                .splineToSplineHeading(Pose2d(-28.0, 49.0, 180.0.toRadians), 180.0.toRadians)
                 .addTemporalMarker(1.0, -2.5) { arm.moveToPickup() }
-                .splineTo(Vector2d(-36.0, 51.0), 180.0.toRadians, slowCombinedConstraints)
+                .splineTo(Vector2d(-36.0, 49.0), 180.0.toRadians, slowCombinedConstraints)
         list.add(builder3.build())
 
         return list
@@ -50,15 +50,15 @@ class AutoKt: LinearOpMode() {
         val list = ArrayList<Trajectory>()
 
         val builder1 = drive.trajectoryBuilder(startPose, startPose.heading)
-        builder1.splineTo(Vector2d(19.0, 40.0), 90.0.toRadians)
+        builder1.splineTo(Vector2d(19.0, 42.0), 90.0.toRadians)
         list.add(builder1.build())
 
         val midTrajectories = midTrajectories(list[list.size - 1].end())
         for (trajectory in midTrajectories) list.add(trajectory)
 
         val builder4 = drive.trajectoryBuilder(list[list.size - 1].end(), 0.0.toRadians)
-        builder4.splineToSplineHeading(Pose2d(-20.0, 51.0, 0.0.toRadians), 0.0.toRadians - EPSILON)
-        builder4.splineTo(Vector2d(-6.0, 51.0), 0.0.toRadians)
+        builder4.splineToSplineHeading(Pose2d(-20.0, 49.0, 0.0.toRadians), 0.0.toRadians - EPSILON)
+        builder4.splineTo(Vector2d(-6.0, 53.0), 0.0.toRadians)
         list.add(builder4.build())
 
         val builder5 = drive.trajectoryBuilder(list[list.size - 1].end(), 270.0.toRadians)
@@ -72,15 +72,15 @@ class AutoKt: LinearOpMode() {
         val list = ArrayList<Trajectory>()
 
         val builder1 = drive.trajectoryBuilder(startPose, startPose.heading)
-        builder1.splineTo(Vector2d(20.0, 38.0), 0.0.toRadians)
+        builder1.splineTo(Vector2d(20.0, 42.0), 0.0.toRadians)
         list.add(builder1.build())
 
         val midTrajectories = midTrajectories(list[list.size - 1].end())
         for (trajectory in midTrajectories) list.add(trajectory)
 
         val builder4 = drive.trajectoryBuilder(list[list.size - 1].end(), 0.0.toRadians)
-        builder4.splineToSplineHeading(Pose2d(-26.0, 51.0, 0.0.toRadians), 0.0.toRadians - EPSILON)
-        builder4.splineTo(Vector2d(14.0, 32.0), 0.0.toRadians)
+        builder4.splineToSplineHeading(Pose2d(-26.0, 49.0, 0.0.toRadians), 0.0.toRadians - EPSILON)
+        builder4.splineTo(Vector2d(14.0, 31.0), 0.0.toRadians)
         list.add(builder4.build())
 
         val builder5 = drive.trajectoryBuilder(list[list.size - 1].end(), true)
@@ -94,15 +94,15 @@ class AutoKt: LinearOpMode() {
         val list = ArrayList<Trajectory>()
 
         val builder1 = drive.trajectoryBuilder(startPose, startPose.heading)
-        builder1.splineTo(Vector2d(54.0, 38.0), 60.0.toRadians)
+        builder1.splineTo(Vector2d(54.0, 42.0), 60.0.toRadians)
         list.add(builder1.build())
 
         val midTrajectories = midTrajectories(list[list.size - 1].end())
         for (trajectory in midTrajectories) list.add(trajectory)
 
         val builder4 = drive.trajectoryBuilder(list[list.size - 1].end(), 0.0.toRadians)
-        builder4.splineToSplineHeading(Pose2d(-20.0, 51.0, 0.0.toRadians), 0.0.toRadians - EPSILON)
-        builder4.splineTo(Vector2d(42.0, 51.0), 0.0.toRadians)
+        builder4.splineToSplineHeading(Pose2d(-20.0, 49.0, 0.0.toRadians), 0.0.toRadians - EPSILON)
+        builder4.splineTo(Vector2d(42.0, 53.0), 0.0.toRadians)
         list.add(builder4.build())
 
         val builder5 = drive.trajectoryBuilder(list[list.size - 1].end(), true)
