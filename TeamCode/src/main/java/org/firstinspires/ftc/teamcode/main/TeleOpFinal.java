@@ -114,7 +114,7 @@ public class TeleOpFinal extends LinearOpMode {
 
             if(aps.getState() == AutonomousPowerShot.State.OFF) {
                 drive.setWeightedDrivePower(driveVelocity);
-            }7
+            }
 
             if (gamepad1.b && aps.getState() == AutonomousPowerShot.State.OFF) {
                 aps.start();
