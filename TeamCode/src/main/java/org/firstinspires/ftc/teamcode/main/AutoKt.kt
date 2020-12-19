@@ -151,7 +151,7 @@ class AutoKt: LinearOpMode() {
 
         drive.followTrajectory(list[0])
         arm.moveToDropOff()
-        sleepUpdate(600)
+        sleepUpdate(1000)
         arm.gripOpen()
         sleepUpdate(500)
         arm.moveToCarry()
@@ -177,7 +177,7 @@ class AutoKt: LinearOpMode() {
 
         drive.followTrajectory(list[3])
         arm.moveToDropOff()
-        sleepUpdate(500)
+        sleepUpdate(1000)
         arm.gripOpen()
         sleepUpdate(500)
 
