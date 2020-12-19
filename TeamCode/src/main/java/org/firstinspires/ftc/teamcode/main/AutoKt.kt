@@ -50,15 +50,15 @@ class AutoKt: LinearOpMode() {
         val list = ArrayList<Trajectory>()
 
         val builder1 = drive.trajectoryBuilder(startPose, startPose.heading)
-        builder1.splineTo(Vector2d(19.0, 42.0), 90.0.toRadians)
+        builder1.splineTo(Vector2d(22.0, 45.0), 90.0.toRadians)
         list.add(builder1.build())
 
         val midTrajectories = midTrajectories(list[list.size - 1].end())
         for (trajectory in midTrajectories) list.add(trajectory)
 
         val builder4 = drive.trajectoryBuilder(list[list.size - 1].end(), 0.0.toRadians)
-        builder4.splineToSplineHeading(Pose2d(-20.0, 56.0, 0.0.toRadians), 0.0.toRadians - EPSILON)
-        builder4.splineTo(Vector2d(-6.0, 56.0), 0.0.toRadians)
+        builder4.splineToSplineHeading(Pose2d(-20.0, 52.0, 0.0.toRadians), 0.0.toRadians - EPSILON)
+        builder4.splineTo(Vector2d(-9.0, 52.0), 0.0.toRadians)
         list.add(builder4.build())
 
         val builder5 = drive.trajectoryBuilder(list[list.size - 1].end(), 270.0.toRadians)
