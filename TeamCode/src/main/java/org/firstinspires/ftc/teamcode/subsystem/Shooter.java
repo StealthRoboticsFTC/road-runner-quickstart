@@ -18,12 +18,12 @@ public class Shooter {
         FIRING
     }
 
-    public static PIDCoefficients VELOCITY_PID = new PIDCoefficients(3, 0, 0.025);
+    public static PIDCoefficients VELOCITY_PID = new PIDCoefficients(3, 0, 0.0);
     public static double kV = 1.0;
     public static double kS = 0.0;
 
-    public static double MAX_VELOCITY = 2200.0;
-    public static double TARGET_VELOCITY = MAX_VELOCITY * 0.92;
+    public static double MAX_VELOCITY = 2300.0;
+    public static double TARGET_VELOCITY = MAX_VELOCITY * 0.95;
 
     public static double SHOOTER_STOP_POWER = 0.0;
     public static double RAMP_UP_TIME = 0.5;
@@ -31,9 +31,9 @@ public class Shooter {
     public static double OUT_ARM_POSITION = 0.0;
     public static double IN_ARM_POSITION = 0.12;
     public static double ARM_OUT_TIME = 0.1;
-    public static double ARM_IN_TIME = 0.65;
+    public static double ARM_IN_TIME = 0.6;
 
-    public static double CONVEYOR_MOVING_POWER = 0.5;
+    public static double CONVEYOR_MOVING_POWER = 0.87;
     public static double CONVEYOR_STOP_POWER = 0.0;
 
     public static Vector2d GOAL_POSITION = new Vector2d(124, 106);

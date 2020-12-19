@@ -56,12 +56,12 @@ public class AutonomousPowerShot {
     private double SHOOTING_SECONDS = 2.0;
     private int AVERAGING_SAMPLES = 6;
 
-    public PIDCoefficients coefficients = new PIDCoefficients(0.05, 0.1, 0);
+    public PIDCoefficients coefficients = new PIDCoefficients(0.1, 0.05, 0);
     private PIDFController pidControl = new PIDFController(coefficients);
 
-    private Pose2d ZERO_POSE = new Pose2d(-17.25, 22.366);
-    private Pose2d ONE_POSE = new Pose2d(-19.25, 14);
-    private Pose2d TWO_POSE = new Pose2d(-19.5, 8.0);
+    private Pose2d ZERO_POSE = new Pose2d(-30.25, 22.366);
+    private Pose2d ONE_POSE = new Pose2d(-30.25, 14);
+    private Pose2d TWO_POSE = new Pose2d(-30.5, 7.0);
 
     private State state = State.OFF;
 
@@ -99,8 +99,8 @@ public class AutonomousPowerShot {
                 break;
             case MOVING:
                 if(! drive.isBusy()) {
-                    state = State.ADJUSTING_DISTANCE;
-//                    shooter.fire(1);
+                    state = State.SHOOTING;
+                    shooter.fire(1);
                 }
                 break;
             case SHOOTING:
@@ -138,10 +138,9 @@ public class AutonomousPowerShot {
                     DriveSignal speed = new DriveSignal(velocityPose);
                     drive.setDriveSignal(speed);
 
-                    if (Math.abs(difference) < 0.1) {
+                    if (Math.abs(difference) < 0.2) {
                         state = State.SHOOTING;
                         shooter.fire(1);
-                        shotNumber++;
                         Pose2d zero = new Pose2d(0, 0, 0);
                         DriveSignal zeroSignal = new DriveSignal(zero);
                         drive.setDriveSignal(zeroSignal);
@@ -156,6 +155,7 @@ public class AutonomousPowerShot {
                 break;
             case WAITING:
                 if(timer.seconds() > SHOOTING_SECONDS) {
+                    shotNumber++;
                     if(shotNumber > 2) {
                         state = State.OFF;
                     } else {

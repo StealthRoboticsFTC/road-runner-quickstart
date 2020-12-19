@@ -83,7 +83,7 @@ public class TeleOpFinal extends LinearOpMode {
             telemetry.addData("heading", poseEstimate.getHeading());
             telemetry.update();
 
-            Vector2d gamepadDirection = new Vector2d(-gamepad1.left_stick_y, -gamepad1.left_stick_x);
+            Vector2d gamepadDirection = new Vector2d(-gamepad1.left_stick_y, -gamepad1.right_stick_x);
             double gamepadNorm = gamepadDirection.norm();
             Vector2d movementVector = gamepadNorm != 0.0
                     ? gamepadDirection.times(controlScale(gamepadNorm, K_TRANSLATION) / gamepadNorm)
@@ -105,7 +105,7 @@ public class TeleOpFinal extends LinearOpMode {
 
             Pose2d driveVelocity = new Pose2d(
                     movementVector,
-                    controlScale(-gamepad1.right_stick_x, K_TURN) + omegaCorrection * kV * TRACK_WIDTH
+                    controlScale(-gamepad1.left_stick_x, K_TURN) + omegaCorrection * kV * TRACK_WIDTH
             ).times(scaleFactor);
 
             if((driveVelocity.getX() != 0 || driveVelocity.getY() != 0 || driveVelocity.getHeading() != 0) && aps.getState() != AutonomousPowerShot.State.OFF) {

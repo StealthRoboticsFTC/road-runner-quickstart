@@ -9,8 +9,8 @@ public class Intake {
     private static double INTAKE_OUT_POWER = 1.0;
     private static double INTAKE_STOP_POWER = 0.0;
 
-    private static double INTAKE_VEX_IN_POWER = -0.5;
-    private static double INTAKE_VEX_OUT_POWER = 0.5;
+    private static double INTAKE_VEX_IN_POWER = -0.9;
+    private static double INTAKE_VEX_OUT_POWER = 0.9;
     private static double INTAKE_VEX_STOP_POWER = 0.0;
 
     public enum State {
