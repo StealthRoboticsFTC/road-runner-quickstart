@@ -98,7 +98,7 @@ public class AutonomousPowerShot {
             case OFF:
                 break;
             case MOVING:
-                if(! drive.isBusy()) {
+                if(!drive.isBusy() && shooter.getState() == Shooter.State.RUNNING) {
                     state = State.SHOOTING;
                     shooter.fire(1);
                 }
@@ -170,6 +170,7 @@ public class AutonomousPowerShot {
     public void start() {
         state = State.MOVING;
         shotNumber = 0;
+        shooter.startPowershotRampUp();
         followTrajectory();
     }
 

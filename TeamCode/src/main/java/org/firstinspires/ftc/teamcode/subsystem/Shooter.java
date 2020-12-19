@@ -24,6 +24,7 @@ public class Shooter {
 
     public static double MAX_VELOCITY = 2300.0;
     public static double TARGET_VELOCITY = MAX_VELOCITY * 0.95;
+    public static double TARGET_POWERSHOT_VELOCITY = MAX_VELOCITY * 0.85;
 
     public static double SHOOTER_STOP_POWER = 0.0;
     public static double RAMP_UP_TIME = 0.5;
@@ -55,6 +56,7 @@ public class Shooter {
     private ElapsedTime armWaitTime = new ElapsedTime();
     private ElapsedTime rampTime = new ElapsedTime();
 
+    private double targetVelocity = TARGET_VELOCITY;
     private int shotsRemaining = 0;
     private boolean armIsIn = true;
 
@@ -83,11 +85,11 @@ public class Shooter {
             case OFF:
                 break;
             case RAMP_UP:
-                double targetVelocity = (TARGET_VELOCITY / RAMP_UP_TIME) * rampTime.seconds();
-                setVelocity(targetVelocity);
+                double currVelocity = (targetVelocity / RAMP_UP_TIME) * rampTime.seconds();
+                setVelocity(currVelocity);
                 if (rampTime.seconds() > RAMP_UP_TIME) {
                     state = State.RUNNING;
-                    setVelocity(TARGET_VELOCITY);
+                    setVelocity(targetVelocity);
                 }
                 break;
             case FIRING:
@@ -133,6 +135,14 @@ public class Shooter {
     public void startRampUp() {
         rampTime.reset();
         conveyor.setPower(CONVEYOR_MOVING_POWER);
+        targetVelocity = TARGET_VELOCITY;
+        state = State.RAMP_UP;
+    }
+
+    public void startPowershotRampUp() {
+        rampTime.reset();
+        conveyor.setPower(CONVEYOR_MOVING_POWER);
+        targetVelocity = TARGET_POWERSHOT_VELOCITY;
         state = State.RAMP_UP;
     }
 
