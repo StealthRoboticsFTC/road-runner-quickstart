@@ -2,12 +2,12 @@ package org.firstinspires.ftc.teamcode.subsystem;
 
 import com.acmerobotics.roadrunner.control.PIDCoefficients;
 import com.acmerobotics.roadrunner.control.PIDFController;
+import com.acmerobotics.roadrunner.drive.DriveSignal;
+import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
-import com.vuforia.PIXEL_FORMAT;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.vision.AimingPipeline;
 import org.openftc.easyopencv.OpenCvCamera;
@@ -32,8 +32,17 @@ public class AutonomousAiming {
     private Shooter shooter;
 
     private ElapsedTime timer = new ElapsedTime();
+    private ElapsedTime pidTimer = new ElapsedTime();
 
-    private double goal;
+    private int currentPowershot = 0;
+    private double lastX = Double.POSITIVE_INFINITY;
+
+    private final double PID_TIME_TOLERANCE = 0.1;
+
+    private final double TARGET = 320/2;
+    private final double AIMING_TOLERANCE = 10;
+
+    private final double POWERSHOT_WAIT_TIME = 0.4;
 
     private AimingPipeline aiming = new AimingPipeline();
 
@@ -44,12 +53,7 @@ public class AutonomousAiming {
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         webcam = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "Webcam 1"), cameraMonitorViewId);
         webcam.setPipeline(new AimingPipeline());
-        webcam.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener()
-        {
-            @Override
-            public void onOpened()
-            { webcam.startStreaming(320, 240, OpenCvCameraRotation.UPRIGHT); }
-        });
+        webcam.openCameraDeviceAsync(() -> webcam.startStreaming(320, 240, OpenCvCameraRotation.UPRIGHT));
 
         this.drive = drive;
         this.shooter = shooter;
@@ -57,42 +61,79 @@ public class AutonomousAiming {
 
     public void update() {
         double currentX = 0;
-        double currentY = 0;
-
-        if(state)
 
         switch (state) {
             case OFF:
                 break;
             case AIMING_HIGH_GOAL:
-                goal = aiming.getGoalCenterX();
-
+                currentX = aiming.getGoalCenterX();
+                if(Math.abs(currentX - TARGET) < AIMING_TOLERANCE && shooter.getState() == Shooter.State.RUNNING) {
+                    shooter.fire(3);
+                    drive.setDriveSignal(new DriveSignal());
+                    pidControl.reset();
+                    state = State.SHOOTING_HIGH_GOAL;
+                }
                 break;
             case AIMING_POWERSHOT:
-                if (!drive.isBusy() && shooter.getState() == Shooter.State.RUNNING) {
-                    //state = State.SHOOTING;
+                currentX = aiming.getPowershotsCenterX()[currentPowershot];
+                if(Math.abs(currentX - TARGET) < AIMING_TOLERANCE && shooter.getState() == Shooter.State.RUNNING) {
                     shooter.fire(1);
+                    drive.setDriveSignal(new DriveSignal());
+                    pidControl.reset();
+                    state = State.SHOOTING_POWERSHOT;
                 }
                 break;
             case SHOOTING_HIGH_GOAL:
                 if (shooter.getState() != Shooter.State.FIRING) {
-                    state = State.WAITING_POWERSHOT;
-                    timer.reset();
+                    state = State.OFF;
                 }
                 break;
             case SHOOTING_POWERSHOT:
+                if (shooter.getState() != Shooter.State.FIRING) {
+                    currentPowershot++;
+                    if (currentPowershot <= 2) {
+                        state = State.WAITING_POWERSHOT;
+                        timer.reset();
+                    } else {
+                        state = State.OFF;
+                    }
+                }
+                currentPowershot++;
                 break;
             case WAITING_POWERSHOT:
+                if (timer.seconds() > POWERSHOT_WAIT_TIME) {
+                    state = State.AIMING_POWERSHOT;
+                }
                 break;
+        }
+        if((state == State.AIMING_HIGH_GOAL || state == State.AIMING_POWERSHOT) && (currentX != lastX || pidTimer.seconds() > PID_TIME_TOLERANCE)) {
+            lastX = currentX;
+            pidControl.setTargetPosition(TARGET);
+            pidTimer.reset();
+            double output = pidControl.update(currentX);
+            DriveSignal driveSignal = new DriveSignal(new Pose2d(0, 0, output));
+            drive.setDriveSignal(driveSignal);
         }
     }
 
     public void startHighGoal() {
         state = State.AIMING_HIGH_GOAL;
+        shooter.startRampUp();
     }
 
     public void startPowershot() {
-        state = State.AIMING_POWERSHOT
+        state = State.AIMING_POWERSHOT;
+        shooter.startPowershotRampUp();
+        currentPowershot = 0;
+    }
+
+    public void stop() {
+        state = State.OFF;
+        pidControl.reset();
+    }
+
+    public State getState() {
+        return state;
     }
 
 }

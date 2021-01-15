@@ -11,6 +11,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
+import org.firstinspires.ftc.teamcode.subsystem.AutonomousAiming;
 import org.firstinspires.ftc.teamcode.subsystem.AutonomousPowerShot;
 import org.firstinspires.ftc.teamcode.subsystem.Intake;
 import org.firstinspires.ftc.teamcode.subsystem.Shooter;
@@ -32,7 +33,7 @@ public class TeleOpFinal extends LinearOpMode {
     private WobbleArm wobbleArm;
     private Shooter shooter;
     private Intake intake;
-    private AutonomousPowerShot aps;
+    private AutonomousAiming aim;
 
     private DistanceSensor backSensor;
     private DistanceSensor frontSensor;
@@ -58,7 +59,7 @@ public class TeleOpFinal extends LinearOpMode {
         frontSensor = hardwareMap.get(DistanceSensor.class, "frontSensor");
         imu = hardwareMap.get(BNO055IMU.class, "imu");
 
-        aps = new AutonomousPowerShot(shooter, drive, backSensor, frontSensor, imu);
+        aim = new AutonomousAiming(hardwareMap, drive, shooter);
 
         waitForStart();
 
@@ -73,7 +74,7 @@ public class TeleOpFinal extends LinearOpMode {
         while (!isStopRequested()) {
             drive.update();
             shooter.update();
-            aps.update();
+            aim.update();
 
             Pose2d poseEstimate = drive.getPoseEstimate();
             Pose2d velocityEstimate = drive.getPoseVelocity();
@@ -108,16 +109,16 @@ public class TeleOpFinal extends LinearOpMode {
                     controlScale(-gamepad1.left_stick_x, K_TURN) + omegaCorrection * kV * TRACK_WIDTH
             ).times(scaleFactor);
 
-            if((driveVelocity.getX() != 0 || driveVelocity.getY() != 0 || driveVelocity.getHeading() != 0) && aps.getState() != AutonomousPowerShot.State.OFF) {
-                aps.stop();
+            if((driveVelocity.getX() != 0 || driveVelocity.getY() != 0 || driveVelocity.getHeading() != 0) && aim.getState() != AutonomousAiming.State.OFF) {
+                aim.stop();
             }
 
-            if(aps.getState() == AutonomousPowerShot.State.OFF) {
+            if(aim.getState() == AutonomousAiming.State.OFF) {
                 drive.setWeightedDrivePower(driveVelocity);
             }
 
-            if (gamepad1.b && aps.getState() == AutonomousPowerShot.State.OFF) {
-                aps.start();
+            if (gamepad1.b && aim.getState() == AutonomousAiming.State.OFF) {
+                aim.startPowershot();
             }
 
             if (gamepad2.x && !isXButtonDown) {
@@ -154,7 +155,7 @@ public class TeleOpFinal extends LinearOpMode {
             }
 
             if (gamepad2.right_trigger > 0.0 && shooter.getState() != Shooter.State.FIRING) {
-                shooter.fire(3);
+                aim.startHighGoal();
             }
 
             if (gamepad2.left_trigger > 0.0 && shooter.getState() != Shooter.State.FIRING) {
