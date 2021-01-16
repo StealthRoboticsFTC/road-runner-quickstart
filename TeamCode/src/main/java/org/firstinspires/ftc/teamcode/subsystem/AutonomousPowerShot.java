@@ -204,7 +204,7 @@ public class AutonomousPowerShot {
 //        Trajectory trajectory = new TrajectoryBuilder(drive.getPoseEstimate(), SHOT_CONSTRAINTS)
 //                .lineToSplineHeading(targetPose).build();
 
-        drive.followTrajectoryAsync(trajectory);
+//        drive.followTrajectoryAsync(trajectory);
 
     }
 
