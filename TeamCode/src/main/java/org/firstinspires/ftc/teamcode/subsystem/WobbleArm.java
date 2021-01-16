@@ -18,7 +18,7 @@ public class WobbleArm {
     public static double ARM_DROPOFF_POSITION = 0.6;
     public static double ARM_PICKUP_POSITION = 0.685;
     public static double GRIP_OPEN_POSITION=0.55;
-    public static double GRIP_CLOSE_POSITION=0.125;
+    public static double GRIP_CLOSE_POSITION=0.05;
 
     private Servo arm;
     private Servo pincher;
