@@ -73,6 +73,7 @@ public class AutonomousAiming {
             GainControl gainControl = webcam.getGainControl();
             gainControl.setGain((int) Range.scale(GAIN, 0, 1, gainControl.getMinGain(), gainControl.getMaxGain()));
             ExposureControl exposureControl = webcam.getExposureControl();
+            exposureControl.setMode(ExposureControl.Mode.Manual);
             exposureControl.setExposure((long) Range.scale(EXPOSURE, 0, 1,
                     exposureControl.getMinExposure(TimeUnit.NANOSECONDS),
                     exposureControl.getMaxExposure(TimeUnit.NANOSECONDS)), TimeUnit.NANOSECONDS);
