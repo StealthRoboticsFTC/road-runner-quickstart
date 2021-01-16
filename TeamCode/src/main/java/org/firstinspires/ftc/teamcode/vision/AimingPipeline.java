@@ -11,7 +11,7 @@ import java.util.List;
 
 public class AimingPipeline extends OpenCvPipeline
 {
-    private static final Scalar HSV_LOWER = new Scalar(100, 30, 50);
+    private static final Scalar HSV_LOWER = new Scalar(100, 50, 50);
     private static final Scalar HSV_UPPER = new Scalar(130, 255, 255);
 
     private static final Mat ERODE_ELEMENT = Imgproc.getStructuringElement(Imgproc.MORPH_RECT, new Size(1, 4));

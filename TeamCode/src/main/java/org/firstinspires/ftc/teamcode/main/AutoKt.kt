@@ -3,25 +3,31 @@ package org.firstinspires.ftc.teamcode.main
 import com.acmerobotics.roadrunner.geometry.Pose2d
 import com.acmerobotics.roadrunner.geometry.Vector2d
 import com.acmerobotics.roadrunner.trajectory.Trajectory
-import com.acmerobotics.roadrunner.trajectory.constraints.DriveConstraints
-import com.acmerobotics.roadrunner.trajectory.constraints.MecanumConstraints
+import com.acmerobotics.roadrunner.trajectory.constraints.AngularVelocityConstraint
+import com.acmerobotics.roadrunner.trajectory.constraints.MecanumVelocityConstraint
+import com.acmerobotics.roadrunner.trajectory.constraints.MinVelocityConstraint
+import com.acmerobotics.roadrunner.trajectory.constraints.ProfileAccelerationConstraint
 import com.acmerobotics.roadrunner.util.EPSILON
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
 import com.qualcomm.robotcore.util.ElapsedTime
-import org.firstinspires.ftc.teamcode.drive.DriveConstants.BASE_CONSTRAINTS
+import org.firstinspires.ftc.teamcode.drive.DriveConstants.MAX_ACCEL
 import org.firstinspires.ftc.teamcode.drive.DriveConstants.TRACK_WIDTH
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive
 import org.firstinspires.ftc.teamcode.subsystem.Shooter
 import org.firstinspires.ftc.teamcode.subsystem.WobbleArm
 import org.firstinspires.ftc.teamcode.vision.UGContourRingDetector
 import org.firstinspires.ftc.teamcode.vision.UGContourRingPipeline
+import java.lang.Math.toRadians
 import kotlin.collections.ArrayList
 
 @Autonomous
 class AutoKt: LinearOpMode() {
-    private val slowConstraints = DriveConstraints(5.0, BASE_CONSTRAINTS.maxAccel, BASE_CONSTRAINTS.maxJerk, BASE_CONSTRAINTS.maxAngVel, BASE_CONSTRAINTS.maxAngAccel, BASE_CONSTRAINTS.maxAngJerk)
-    private val slowCombinedConstraints = MecanumConstraints(slowConstraints, TRACK_WIDTH)
+    private val velConstraint = MinVelocityConstraint(java.util.Arrays.asList(
+        AngularVelocityConstraint(toRadians(90.0)),
+        MecanumVelocityConstraint(5.0, TRACK_WIDTH)
+    ))
+    private val accelConstraint = ProfileAccelerationConstraint(MAX_ACCEL)
 
     private val startPose = Pose2d(-63.0, 19.0, 0.0)
 
@@ -40,7 +46,7 @@ class AutoKt: LinearOpMode() {
         builder3
                 .splineToSplineHeading(Pose2d(-28.0, 51.0, 180.0.toRadians), 180.0.toRadians)
                 .addTemporalMarker(1.0, -2.5) { arm.moveToPickup() }
-                .splineTo(Vector2d(-36.0, 51.0), 180.0.toRadians, slowCombinedConstraints)
+                .splineTo(Vector2d(-36.0, 51.0), 180.0.toRadians, velConstraint, accelConstraint)
         list.add(builder3.build())
 
         return list
