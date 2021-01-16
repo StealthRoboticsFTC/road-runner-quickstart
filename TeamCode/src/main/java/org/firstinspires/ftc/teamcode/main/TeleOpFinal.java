@@ -95,7 +95,7 @@ public class TeleOpFinal extends LinearOpMode {
                     : 1.0;
 
             double omegaCorrection = 0.0;
-            if (gamepad2.b) {
+            if (gamepad2.b || gamepad1.left_trigger > 0.2) {
                 double theta = GOAL_POSITION.minus(poseEstimate.vec()).angle();
                 headingController.setTargetPosition(theta);
 
@@ -154,7 +154,7 @@ public class TeleOpFinal extends LinearOpMode {
                 }
             }
 
-            if (gamepad2.left_trigger > 0.0 && shooter.getState() != Shooter.State.FIRING) {
+            if (gamepad1.right_trigger > 0.0 && shooter.getState() != Shooter.State.FIRING) {
                 aim.startHighGoal();
             }
 
