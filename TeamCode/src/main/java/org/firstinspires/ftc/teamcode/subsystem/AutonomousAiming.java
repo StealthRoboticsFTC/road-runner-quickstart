@@ -1,11 +1,14 @@
 package org.firstinspires.ftc.teamcode.subsystem;
 
+import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.control.PIDCoefficients;
 import com.acmerobotics.roadrunner.control.PIDFController;
 import com.acmerobotics.roadrunner.drive.DriveSignal;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
+import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
@@ -15,6 +18,7 @@ import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvWebcam;
 
+@Config
 public class AutonomousAiming {
     public enum State {
         OFF,
@@ -37,23 +41,28 @@ public class AutonomousAiming {
     private int currentPowershot = 0;
     private double lastX = Double.POSITIVE_INFINITY;
 
-    private final double PID_TIME_TOLERANCE = 0.1;
+    public static double PID_TIME_TOLERANCE = 0.1;
 
-    private final double TARGET = 320/2;
-    private final double AIMING_TOLERANCE = 10;
+    public static double TARGET = 320/2;
+    public static double AIMING_TOLERANCE = 10;
+    public static double MAX_SPEED = 0.3;
 
-    private final double POWERSHOT_WAIT_TIME = 0.4;
+    public static double POWERSHOT_WAIT_TIME = 2.0;
 
     private AimingPipeline aiming = new AimingPipeline();
 
-    public PIDCoefficients coefficients = new PIDCoefficients(0.1, 0.05, 0);
+    public static PIDCoefficients coefficients = new PIDCoefficients(0.015, 0.005,
+            0.0005);
     private PIDFController pidControl = new PIDFController(coefficients);
 
     public AutonomousAiming(HardwareMap hardwareMap, SampleMecanumDrive drive, Shooter shooter) {
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         webcam = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "Webcam 1"), cameraMonitorViewId);
-        webcam.setPipeline(new AimingPipeline());
-        webcam.openCameraDeviceAsync(() -> webcam.startStreaming(320, 240, OpenCvCameraRotation.UPRIGHT));
+        webcam.setPipeline(aiming);
+        webcam.openCameraDeviceAsync(() ->{
+            FtcDashboard.getInstance().startCameraStream(webcam, 30);
+            webcam.startStreaming(320, 240, OpenCvCameraRotation.UPRIGHT);
+        });
 
         this.drive = drive;
         this.shooter = shooter;
@@ -98,7 +107,6 @@ public class AutonomousAiming {
                         state = State.OFF;
                     }
                 }
-                currentPowershot++;
                 break;
             case WAITING_POWERSHOT:
                 if (timer.seconds() > POWERSHOT_WAIT_TIME) {
@@ -106,11 +114,19 @@ public class AutonomousAiming {
                 }
                 break;
         }
+
+        System.out.println("****");
+        System.out.println(state);
+        System.out.println(TARGET);
+        System.out.println(currentX);
+
+
+
         if((state == State.AIMING_HIGH_GOAL || state == State.AIMING_POWERSHOT) && (currentX != lastX || pidTimer.seconds() > PID_TIME_TOLERANCE)) {
             lastX = currentX;
             pidControl.setTargetPosition(TARGET);
             pidTimer.reset();
-            double output = pidControl.update(currentX);
+            double output = Range.clip(pidControl.update(currentX),MAX_SPEED, -MAX_SPEED);
             DriveSignal driveSignal = new DriveSignal(new Pose2d(0, 0, output));
             drive.setDriveSignal(driveSignal);
         }

@@ -11,14 +11,14 @@ import java.util.List;
 
 public class AimingPipeline extends OpenCvPipeline
 {
-    private static final Scalar HSV_LOWER = new Scalar(100, 50, 50);
+    private static final Scalar HSV_LOWER = new Scalar(100, 30, 50);
     private static final Scalar HSV_UPPER = new Scalar(130, 255, 255);
 
     private static final Mat ERODE_ELEMENT = Imgproc.getStructuringElement(Imgproc.MORPH_RECT, new Size(1, 4));
     private static final Mat DIALATE_ELEMENT = Imgproc.getStructuringElement(Imgproc.MORPH_RECT, new Size(2, 4));
 
     private static final int MIN_Y = 20;
-    private static final int MAX_Y = 180;
+    private static final int MAX_Y = 100;
 
     // width / height ratio
     private static final double MIN_POWERSHOT_BOX_RATIO = 1.2;
@@ -27,7 +27,7 @@ public class AimingPipeline extends OpenCvPipeline
     private static final double MIN_GOAL_BOX_RATIO = 1.0 / 8.0;
     private static final double MAX_GOAL_BOX_RATIO = 1.0;
 
-    private static final double MIN_POWERSHOT_WIDTH = 0.0;
+    private static final double MIN_POWERSHOT_WIDTH = 2.0;
     private static final double MAX_POWERSHOT_WIDTH = 60.0;
 
     private static final double MIN_GOAL_WIDTH = 30.0;
@@ -98,8 +98,8 @@ public class AimingPipeline extends OpenCvPipeline
         Imgproc.line(finalMat, new Point(0, MAX_Y), new Point(finalMat.width(), MAX_Y), new Scalar(255.0, 165.0, 0.0), 2);
 
         // initial noise reduction, bilateral is good for noise reduction while preserving boundaries
-        Imgproc.bilateralFilter(input, filteredMat, 5, 100, 100);
-
+//        Imgproc.bilateralFilter(input, filteredMat, 5, 100, 100);
+        input.copyTo(filteredMat);
         // rgb -> hsv
         Imgproc.cvtColor(filteredMat, rangeMat, Imgproc.COLOR_RGB2HSV);
         // hsv filtering
@@ -156,7 +156,7 @@ public class AimingPipeline extends OpenCvPipeline
         }
 
         // initialize search params
-        double minDetectedSpacing = Integer.MAX_VALUE;
+        double minDetectedSpacing = Double.MAX_VALUE;
         RotatedRect match1 = rects.get(0);
         RotatedRect match2 = rects.get(1);
         RotatedRect match3 = rects.get(2);
@@ -210,10 +210,11 @@ public class AimingPipeline extends OpenCvPipeline
         drawRotatedRect(finalMat, match1, new Scalar(255.0, 0.0, 0.0), 3);
         drawRotatedRect(finalMat, match2, new Scalar(255.0, 0.0, 0.0), 3);
         drawRotatedRect(finalMat, match3, new Scalar(255.0, 0.0, 0.0), 3);
-
-        powershot1CenterX = match1.center.x;
-        powershot2CenterX = match1.center.x;
-        powershot3CenterX = match1.center.x;
+        if (minDetectedSpacing !=Double.MAX_VALUE){
+            powershot1CenterX = match1.center.x;
+            powershot2CenterX = match2.center.x;
+            powershot3CenterX = match3.center.x;
+        }
 
         Mat[] mats = new Mat[] { finalMat, input, filteredMat, rangeMat, denoisedMat, contourMat };
         return mats[stageNum % mats.length];
