@@ -50,15 +50,15 @@ public class AutonomousAiming {
     public static double GAIN = 1.0;
     public static double EXPOSURE = 0.2;
 
-    public static double TARGET = 320/2;
+    public static double TARGET = (320/2) - 10;
     public static double AIMING_TOLERANCE = 10;
     public static double MAX_SPEED = 0.6;
 
-    public static double POWERSHOT_WAIT_TIME = 2.0;
+    public static double POWERSHOT_WAIT_TIME = 1.3;
 
     private AimingPipeline aiming = new AimingPipeline();
 
-    public static PIDCoefficients coefficients = new PIDCoefficients(0.015, 0.005,
+    public static PIDCoefficients coefficients = new PIDCoefficients(0.013, 0.004,
             0.0005);
     private PIDFController pidControl = new PIDFController(coefficients);
 
@@ -141,7 +141,7 @@ public class AutonomousAiming {
             lastX = currentX;
             pidControl.setTargetPosition(TARGET);
             pidTimer.reset();
-            double output = Range.clip(pidControl.update(currentX), MAX_SPEED, -MAX_SPEED);
+            double output = Range.clip(pidControl.update(currentX), -MAX_SPEED, MAX_SPEED);
             DriveSignal driveSignal = new DriveSignal(new Pose2d(0, 0, output));
             drive.setDriveSignal(driveSignal);
         }
