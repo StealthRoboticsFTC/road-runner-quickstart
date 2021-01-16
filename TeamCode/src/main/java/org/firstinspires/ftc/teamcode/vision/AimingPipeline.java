@@ -35,6 +35,8 @@ public class AimingPipeline extends OpenCvPipeline
 
     private static final double X_SPACING_TOLERANCE = 0.3;
 
+    private static final double MAX_SPACING_RATIO = 0.4;
+
     // max difference in widths between powershots abs(h1 - h2) / (h1 + h2)
     private static final double MAX_WIDTH_RATIO = 0.25;
 
@@ -191,12 +193,14 @@ public class AimingPipeline extends OpenCvPipeline
                     // spacing in the x direction should be similar between each pair
                     // difference in y spacing between each pair should be low relative to the x spacing
                     // the widths of each rect should be similar
+                    // the ratio between y and x spacing should be less than a max value
                     // we are looking to find the combination that fits these criteria and minimizes overall spacing
                     if (Math.abs(spacingXAB - spacingXBC) / spacingXCombined < X_SPACING_TOLERANCE
                             && spacingYDifference / spacingXCombined < MAX_SPACING_RATIO
                             && Math.abs(sizeA.width - sizeB.width) / (sizeA.width + sizeB.width) < MAX_WIDTH_RATIO
                             && Math.abs(sizeB.width - sizeC.width) / (sizeB.width + sizeC.width) < MAX_WIDTH_RATIO
                             && Math.abs(sizeA.width - sizeC.width) / (sizeA.width + sizeC.width) < MAX_WIDTH_RATIO
+                            && spacingYCombined / spacingXCombined < MAX_SPACING_RATIO
                             && spacingXCombined + spacingYCombined < minDetectedSpacing) {
                         match1 = rectA;
                         match2 = rectB;
