@@ -7,8 +7,8 @@ import com.acmerobotics.roadrunner.drive.DriveSignal;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.acmerobotics.roadrunner.trajectory.TrajectoryBuilder;
-import com.acmerobotics.roadrunner.trajectory.constraints.DriveConstraints;
-import com.acmerobotics.roadrunner.trajectory.constraints.MecanumConstraints;
+//import com.acmerobotics.roadrunner.trajectory.constraints.DriveConstraints;
+//import com.acmerobotics.roadrunner.trajectory.constraints.MecanumConstraints;
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -59,8 +59,8 @@ public class AutonomousPowerShot {
         WAITING
     }
 
-    private DriveConstraints BASE_SHOT_CONSTRAINTS = new DriveConstraints(40.0, 30.0, 0.0, Math.toRadians(180.0), Math.toRadians(180.0), 0.0);
-    private DriveConstraints SHOT_CONSTRAINTS = new MecanumConstraints(BASE_SHOT_CONSTRAINTS, TRACK_WIDTH);
+//    private DriveConstraints BASE_SHOT_CONSTRAINTS = new DriveConstraints(40.0, 30.0, 0.0, Math.toRadians(180.0), Math.toRadians(180.0), 0.0);
+//    private DriveConstraints SHOT_CONSTRAINTS = new MecanumConstraints(BASE_SHOT_CONSTRAINTS, TRACK_WIDTH);
     private double SHOOTING_SECONDS = 2.0;
     private int AVERAGING_SAMPLES = 6;
 
@@ -201,8 +201,8 @@ public class AutonomousPowerShot {
                 break;
         }
 
-        Trajectory trajectory = new TrajectoryBuilder(drive.getPoseEstimate(), SHOT_CONSTRAINTS)
-                .lineToSplineHeading(targetPose).build();
+//        Trajectory trajectory = new TrajectoryBuilder(drive.getPoseEstimate(), SHOT_CONSTRAINTS)
+//                .lineToSplineHeading(targetPose).build();
 
         drive.followTrajectoryAsync(trajectory);
 
