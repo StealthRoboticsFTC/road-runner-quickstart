@@ -17,7 +17,7 @@ public class AimingPipeline extends OpenCvPipeline
     private static final Mat ERODE_ELEMENT = Imgproc.getStructuringElement(Imgproc.MORPH_RECT, new Size(1, 4));
     private static final Mat DIALATE_ELEMENT = Imgproc.getStructuringElement(Imgproc.MORPH_RECT, new Size(2, 4));
 
-    private static final int MIN_Y = 20;
+    private static final int MIN_Y = 0;
     private static final int MAX_Y = 100;
 
     // width / height ratio
