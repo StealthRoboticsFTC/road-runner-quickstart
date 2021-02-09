@@ -23,8 +23,8 @@ public class Shooter {
     public static double kS = 0.0;
 
     public static double MAX_VELOCITY = 2300.0;
-    public static double TARGET_VELOCITY = MAX_VELOCITY * 0.92;
-    public static double TARGET_POWERSHOT_VELOCITY = MAX_VELOCITY * 0.85;
+    public static double TARGET_VELOCITY = MAX_VELOCITY * 0.93;
+    public static double TARGET_POWERSHOT_VELOCITY = MAX_VELOCITY * 0.86;
 
     public static double SHOOTER_STOP_POWER = 0.0;
     public static double RAMP_UP_TIME = 0.5;

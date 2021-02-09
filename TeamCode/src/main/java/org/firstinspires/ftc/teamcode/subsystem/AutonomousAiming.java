@@ -8,12 +8,14 @@ import com.acmerobotics.roadrunner.drive.DriveSignal;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
+import com.qualcomm.robotcore.util.MovingStatistics;
 import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.ExposureControl;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.GainControl;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
+import org.firstinspires.ftc.teamcode.util.ModifiedPIDFController;
 import org.firstinspires.ftc.teamcode.vision.AimingPipeline;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
@@ -43,24 +45,29 @@ public class AutonomousAiming {
     private ElapsedTime pidTimer = new ElapsedTime();
 
     private int currentPowershot = 0;
-    private double lastX = Double.POSITIVE_INFINITY;
+    private double lastX = Double.MAX_VALUE;
+    private MovingStatistics lastXs = new MovingStatistics(5);
+    private double lastDelta = 0.0;
 
-    public static double PID_TIME_TOLERANCE = 0.1;
+    public static double PID_TIME_TOLERANCE = 0.2;
 
     public static double GAIN = 1.0;
-    public static double EXPOSURE = 0.2;
+    public static double EXPOSURE = 0.12;
 
     public static double TARGET = (320/2) - 10;
-    public static double AIMING_TOLERANCE = 10;
-    public static double MAX_SPEED = 0.6;
+    public static double AIMING_POWERSHOT_TOLERANCE = 6;
+    public static double AIMING_GOAL_TOLERANCE = 12;
+    public static double AIMING_DELTA_TOLERANCE = 4;
+    public static double MAX_SPEED = 0.5;
+    public static double MIN_SPEED = 0.05;
 
     public static double POWERSHOT_WAIT_TIME = 1.3;
 
     private AimingPipeline aiming = new AimingPipeline();
 
-    public static PIDCoefficients coefficients = new PIDCoefficients(0.013, 0.004,
-            0.0005);
-    private PIDFController pidControl = new PIDFController(coefficients);
+    public static PIDCoefficients coefficients = new PIDCoefficients(0.012, 0.001,
+            0.0);
+    private ModifiedPIDFController pidControl = new ModifiedPIDFController(coefficients, 20.0);
 
     public AutonomousAiming(HardwareMap hardwareMap, SampleMecanumDrive drive, Shooter shooter) {
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
@@ -91,7 +98,8 @@ public class AutonomousAiming {
                 break;
             case AIMING_HIGH_GOAL:
                 currentX = aiming.getGoalCenterX();
-                if(Math.abs(currentX - TARGET) < AIMING_TOLERANCE && shooter.getState() == Shooter.State.RUNNING) {
+                if(Math.abs(currentX - TARGET) < AIMING_GOAL_TOLERANCE && shooter.getState() == Shooter.State.RUNNING) {
+                    lastXs.clear();
                     shooter.fire(3);
                     drive.setDriveSignal(new DriveSignal());
                     pidControl.reset();
@@ -100,7 +108,10 @@ public class AutonomousAiming {
                 break;
             case AIMING_POWERSHOT:
                 currentX = aiming.getPowershotsCenterX()[currentPowershot];
-                if(Math.abs(currentX - TARGET) < AIMING_TOLERANCE && shooter.getState() == Shooter.State.RUNNING) {
+                if(Math.abs(currentX - TARGET) < AIMING_POWERSHOT_TOLERANCE
+                        && shooter.getState() == Shooter.State.RUNNING
+                        && Math.abs(lastDelta) <= AIMING_DELTA_TOLERANCE) {
+                    lastXs.clear();
                     shooter.fire(1);
                     drive.setDriveSignal(new DriveSignal());
                     pidControl.reset();
@@ -130,19 +141,17 @@ public class AutonomousAiming {
                 break;
         }
 
-        System.out.println("****");
-        System.out.println(state);
-        System.out.println(TARGET);
-        System.out.println(currentX);
-
-
-
-        if((state == State.AIMING_HIGH_GOAL || state == State.AIMING_POWERSHOT) && (currentX != lastX || pidTimer.seconds() > PID_TIME_TOLERANCE)) {
+        if((state == State.AIMING_HIGH_GOAL || state == State.AIMING_POWERSHOT)
+                && (currentX != lastX || pidTimer.seconds() > PID_TIME_TOLERANCE)) {
+            lastXs.add(currentX);
+            lastDelta = (currentX - lastXs.getMean()) / lastXs.getCount();
             lastX = currentX;
             pidControl.setTargetPosition(TARGET);
+            pidControl.setOutputBounds(-MAX_SPEED, MAX_SPEED);
             pidTimer.reset();
-            double output = Range.clip(pidControl.update(currentX), -MAX_SPEED, MAX_SPEED);
-            DriveSignal driveSignal = new DriveSignal(new Pose2d(0, 0, output));
+            double output = pidControl.update(currentX);
+            DriveSignal driveSignal = new DriveSignal(new Pose2d(0, 0,
+                    output + Math.signum(output) * MIN_SPEED));
             drive.setDriveSignal(driveSignal);
         }
     }
@@ -150,11 +159,13 @@ public class AutonomousAiming {
     public void startHighGoal() {
         state = State.AIMING_HIGH_GOAL;
         shooter.startRampUp();
+        lastXs.clear();
     }
 
     public void startPowershot() {
         state = State.AIMING_POWERSHOT;
         shooter.startPowershotRampUp();
+        lastXs.clear();
         currentPowershot = 0;
     }
 

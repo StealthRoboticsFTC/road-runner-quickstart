@@ -25,6 +25,7 @@ import com.acmerobotics.roadrunner.trajectory.constraints.MinVelocityConstraint;
 import com.acmerobotics.roadrunner.trajectory.constraints.ProfileAccelerationConstraint;
 import com.acmerobotics.roadrunner.trajectory.constraints.TrajectoryAccelerationConstraint;
 import com.acmerobotics.roadrunner.trajectory.constraints.TrajectoryVelocityConstraint;
+import com.acmerobotics.roadrunner.util.Angle;
 import com.acmerobotics.roadrunner.util.NanoClock;
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.lynx.LynxModule;
@@ -61,8 +62,8 @@ import static org.firstinspires.ftc.teamcode.drive.DriveConstants.kV;
  */
 @Config
 public class SampleMecanumDrive extends MecanumDrive {
-    public static PIDCoefficients TRANSLATIONAL_PID = new PIDCoefficients(6, 0, 0.3);
-    public static PIDCoefficients HEADING_PID = new PIDCoefficients(6, 0, 0.3);
+    public static PIDCoefficients TRANSLATIONAL_PID = new PIDCoefficients(8, 0, 0.3);
+    public static PIDCoefficients HEADING_PID = new PIDCoefficients(8, 0, 0.3);
 
     public static double LATERAL_MULTIPLIER = 1;
 
@@ -70,7 +71,7 @@ public class SampleMecanumDrive extends MecanumDrive {
     public static double VY_WEIGHT = 1;
     public static double OMEGA_WEIGHT = 1;
 
-    public static int POSE_HISTORY_LIMIT = 100;
+    public static int POSE_HISTORY_LIMIT = 200;
 
     public enum Mode {
         IDLE,
@@ -120,7 +121,7 @@ public class SampleMecanumDrive extends MecanumDrive {
         ));
         accelConstraint = new ProfileAccelerationConstraint(MAX_ACCEL);
         follower = new HolonomicPIDVAFollower(TRANSLATIONAL_PID, TRANSLATIONAL_PID, HEADING_PID,
-                new Pose2d(0.5, 0.5, Math.toRadians(5.0)), 0.5);
+                new Pose2d(1.0, 1.0, Math.toRadians(5.0)), 1.0);
 
         poseHistory = new LinkedList<>();
 
@@ -259,19 +260,25 @@ public class SampleMecanumDrive extends MecanumDrive {
                 break;
             case TURN: {
                 double t = clock.seconds() - turnStart;
+                boolean isProfileComplete = t >= turnProfile.duration();
+                double correctionFactor = isProfileComplete ? 0.7 : 1.0;
 
                 MotionState targetState = turnProfile.get(t);
 
                 turnController.setTargetPosition(targetState.getX());
+                turnController.setTargetVelocity(targetState.getV());
 
-                double correction = turnController.update(currentPose.getHeading());
+                Pose2d velocity = getPoseVelocity();
+                double correction = velocity != null
+                        ? turnController.update(currentPose.getHeading(), velocity.getHeading())
+                        : turnController.update(currentPose.getHeading());
 
-                double targetOmega = targetState.getV();
-                double targetAlpha = targetState.getA();
+                double targetOmega = !isProfileComplete ? targetState.getV() : 0.0;
+                double targetAlpha = !isProfileComplete ? targetState.getA() : 0.0;
                 setDriveSignal(new DriveSignal(new Pose2d(
-                        0, 0, targetOmega + correction
+                        0, 0, targetOmega + correction * correctionFactor
                 ), new Pose2d(
-                        0, 0, targetAlpha
+                        0, 0, 0 //REMOVED targetOmega due to overshoot instability on small turns
                 )));
 
                 Pose2d newPose = lastPoseOnTurn.copy(lastPoseOnTurn.getX(), lastPoseOnTurn.getY(), targetState.getX());
@@ -279,7 +286,10 @@ public class SampleMecanumDrive extends MecanumDrive {
                 fieldOverlay.setStroke("#4CAF50");
                 DashboardUtil.drawRobot(fieldOverlay, newPose);
 
-                if (t >= turnProfile.duration()) {
+                packet.put("err", turnController.getLastError());
+
+                if (t >= turnProfile.duration() + 1.0 || (t >= turnProfile.duration() + 0.2
+                        && Math.abs(Angle.normDelta(currentPose.getHeading() - targetState.getX())) < Math.toRadians(0.5))) {
                     mode = Mode.IDLE;
                     setDriveSignal(new DriveSignal());
                 }

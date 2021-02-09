@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.drive.opmode;
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 
@@ -17,6 +18,7 @@ public class TurnTest extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
+        ElapsedTime timer = new ElapsedTime();
 
         waitForStart();
 
@@ -24,6 +26,10 @@ public class TurnTest extends LinearOpMode {
 
         while (!isStopRequested()) {
             drive.turn(Math.toRadians(ANGLE));
+            timer.reset();
+            while (!isStopRequested() && timer.seconds() < 1.0) {
+                drive.update();
+            }
         }
 
     }

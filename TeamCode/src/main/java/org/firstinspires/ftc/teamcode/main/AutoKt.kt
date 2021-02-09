@@ -125,7 +125,7 @@ class AutoKt: LinearOpMode() {
 
     private fun sleepUpdate(ms: Long) {
         val elapsedTime = ElapsedTime()
-        while (elapsedTime.milliseconds() < ms) {
+        while (elapsedTime.milliseconds() < ms && !isStopRequested) {
             update()
         }
     }
@@ -164,11 +164,11 @@ class AutoKt: LinearOpMode() {
 
         drive.followTrajectory(list[1])
         shooter.startRampUp()
-        while (shooter.state == Shooter.State.RAMP_UP) {
+        while (shooter.state == Shooter.State.RAMP_UP && !isStopRequested) {
             update()
         }
         shooter.fire(3)
-        while (shooter.state == Shooter.State.FIRING) {
+        while (shooter.state == Shooter.State.FIRING && !isStopRequested) {
             update()
         }
         sleepUpdate(1500)

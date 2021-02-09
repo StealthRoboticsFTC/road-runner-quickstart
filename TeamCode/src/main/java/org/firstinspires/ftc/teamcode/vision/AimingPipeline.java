@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.vision;
 
+import com.acmerobotics.dashboard.config.Config;
+
 import org.opencv.core.*;
 import org.openftc.easyopencv.OpenCvPipeline;
 
@@ -9,38 +11,39 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
+@Config
 public class AimingPipeline extends OpenCvPipeline
 {
-    private static final Scalar HSV_LOWER = new Scalar(100, 50, 50);
-    private static final Scalar HSV_UPPER = new Scalar(130, 255, 255);
+    public static Scalar HSV_LOWER = new Scalar(100, 100, 50);
+    public static Scalar HSV_UPPER = new Scalar(130, 255, 255);
 
-    private static final Mat ERODE_ELEMENT = Imgproc.getStructuringElement(Imgproc.MORPH_RECT, new Size(1, 4));
-    private static final Mat DIALATE_ELEMENT = Imgproc.getStructuringElement(Imgproc.MORPH_RECT, new Size(2, 4));
+    private static Mat ERODE_ELEMENT;
+    private static Mat DIALATE_ELEMENT;
 
-    private static final int MIN_Y = 0;
-    private static final int MAX_Y = 100;
+    public static int MIN_Y = 0;
+    public static int MAX_Y = 100;
 
     // width / height ratio
-    private static final double MIN_POWERSHOT_BOX_RATIO = 1.2;
-    private static final double MAX_POWERSHOT_BOX_RATIO = 8.0;
+    public static double MIN_POWERSHOT_BOX_RATIO = 1.2;
+    public static double MAX_POWERSHOT_BOX_RATIO = 8.0;
 
-    private static final double MIN_GOAL_BOX_RATIO = 1.0 / 8.0;
-    private static final double MAX_GOAL_BOX_RATIO = 1.0;
+    public static double MIN_GOAL_BOX_RATIO = 1.0 / 8.0;
+    public static double MAX_GOAL_BOX_RATIO = 1.0;
 
-    private static final double MIN_POWERSHOT_WIDTH = 2.0;
-    private static final double MAX_POWERSHOT_WIDTH = 60.0;
+    public static double MIN_POWERSHOT_WIDTH = 2.0;
+    public static double MAX_POWERSHOT_WIDTH = 10.0;
 
-    private static final double MIN_GOAL_WIDTH = 30.0;
-    private static final double MAX_GOAL_WIDTH = 160.0;
+    public static double MIN_GOAL_WIDTH = 30.0;
+    public static double MAX_GOAL_WIDTH = 160.0;
 
-    private static final double X_SPACING_TOLERANCE = 0.3;
+    public static double X_SPACING_TOLERANCE = 0.15;
 
     // max difference in widths between powershots abs(h1 - h2) / (h1 + h2)
-    private static final double MAX_WIDTH_RATIO = 0.25;
+    public static double MAX_WIDTH_RATIO = 0.25;
 
     // y spacing difference / x spacing
-    private static final double MAX_SPACING_RATIO = 0.25;
-    private static final double MAX_COMBINED_SPACING_RATIO = 0.4;
+    public static double MAX_SPACING_RATIO = 0.1;
+    public static double MAX_COMBINED_SPACING_RATIO = 0.2;
 
     private Mat filteredMat = new Mat();
     private Mat rangeMat = new Mat();
@@ -52,12 +55,19 @@ public class AimingPipeline extends OpenCvPipeline
     private List<MatOfPoint> contours = new ArrayList<>();
     private List<RotatedRect> rects = new ArrayList<>();
 
-    private int stageNum = 0;
+    public static int stageNum = 0;
 
     private double goalCenterX;
     private double powershot1CenterX;
     private double powershot2CenterX;
     private double powershot3CenterX;
+
+    public AimingPipeline() {
+        super();
+
+        ERODE_ELEMENT = Imgproc.getStructuringElement(Imgproc.MORPH_RECT, new Size(1, 4));
+        DIALATE_ELEMENT = Imgproc.getStructuringElement(Imgproc.MORPH_RECT, new Size(2, 4));
+    }
 
     private Size adjustedRotatedRectSize(RotatedRect rotatedRect) {
         Size size = rotatedRect.size;
