@@ -33,6 +33,7 @@ public class Intake {
     private Servo stackArm;
     private HardwareMap hardwareMap;
     private State state = State.OFF;
+    private boolean isStackArmOut;
 
     private Intake() {}
 
@@ -42,6 +43,7 @@ public class Intake {
         this.rightIntake = hardwareMap.get(DcMotor.class, "rightIntake");
         this.vexMotor = hardwareMap.get(CRServo.class, "vexMotor");
         this.stackArm = hardwareMap.get(Servo.class, "stackArm");
+        this.isStackArmOut = false;
         this.moveStackArmIn();
         this.stop();
     }
@@ -72,10 +74,16 @@ public class Intake {
     }
 
     public void moveStackArmOut() {
+        isStackArmOut = true;
         stackArm.setPosition(STACK_ARM_OUT_POSITION);
     }
 
     public void moveStackArmIn() {
+        isStackArmOut = false;
         stackArm.setPosition(STACK_ARM_IN_POSITION);
+    }
+
+    public boolean isStackArmOut() {
+        return isStackArmOut;
     }
 }
