@@ -95,7 +95,7 @@ public class TeleOpFinal extends LinearOpMode {
                     : 1.0;
 
             double omegaCorrection = 0.0;
-            if (gamepad2.b || gamepad1.left_trigger > 0.0) {
+            if (gamepad1.left_trigger > 0.0) {
                 double theta = GOAL_POSITION.minus(poseEstimate.vec()).angle();
                 headingController.setTargetPosition(theta);
 
@@ -121,7 +121,7 @@ public class TeleOpFinal extends LinearOpMode {
                 aim.startPowershot();
             }
 
-            if (gamepad2.x && !isXButtonDown) {
+            if (gamepad1.x && !isXButtonDown) {
                 switch(wobbleArm.getArmPosition()){
                     case INITIAL:
                     case PICKUP:
@@ -138,7 +138,7 @@ public class TeleOpFinal extends LinearOpMode {
                 }
             }
 
-            if (gamepad2.a && !isAButtonDown) {
+            if (gamepad1.a && !isAButtonDown) {
                 if (wobbleArm.isGripOpen()) {
                     wobbleArm.gripClose();
                 } else {
@@ -146,7 +146,7 @@ public class TeleOpFinal extends LinearOpMode {
                 }
             }
 
-            if (gamepad2.y && !yHasBeenPressed) {
+            if (gamepad1.y && !yHasBeenPressed) {
                 if (shooter.getState() == Shooter.State.OFF) {
                     shooter.startRampUp();
                 } else {
@@ -158,11 +158,11 @@ public class TeleOpFinal extends LinearOpMode {
                 aim.startHighGoal();
             }
 
-            if (gamepad2.left_trigger > 0.0 && shooter.getState() != Shooter.State.FIRING) {
+            if (gamepad1.left_trigger > 0.0 && shooter.getState() != Shooter.State.FIRING) {
                 shooter.fire(1);
             }
 
-            if (gamepad2.right_bumper && !hasRBBeenPressed) {
+            if (gamepad1.right_bumper && !hasRBBeenPressed) {
                 if (intake.getState() == Intake.State.OFF) {
                     intake.startIn();
                 } else {
@@ -170,7 +170,7 @@ public class TeleOpFinal extends LinearOpMode {
                 }
             }
 
-            if (gamepad2.left_bumper && !hasLBBeenPressed) {
+            if (gamepad1.left_bumper && !hasLBBeenPressed) {
                 if (intake.getState() == Intake.State.OFF) {
                     intake.startOut();
                 } else {
@@ -182,11 +182,11 @@ public class TeleOpFinal extends LinearOpMode {
                 drive.setPoseEstimate(CALIBRATION_POSE);
             }
 
-            isXButtonDown = gamepad2.x;
-            isAButtonDown = gamepad2.a;
-            yHasBeenPressed = gamepad2.y;
-            hasRBBeenPressed = gamepad2.right_bumper;
-            hasLBBeenPressed = gamepad2.left_bumper;
+            isXButtonDown = gamepad1.x;
+            isAButtonDown = gamepad1.a;
+            yHasBeenPressed = gamepad1.y;
+            hasRBBeenPressed = gamepad1.right_bumper;
+            hasLBBeenPressed = gamepad1.left_bumper;
         }
     }
 }
