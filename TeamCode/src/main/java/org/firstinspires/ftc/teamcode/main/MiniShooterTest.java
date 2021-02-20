@@ -12,7 +12,8 @@ public class MiniShooterTest extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         Telemetry telemetry = new MultipleTelemetry(this.telemetry, FtcDashboard.getInstance().getTelemetry());
-        DcMotorEx shooterMotor = hardwareMap.get(DcMotorEx.class, "shooterMotor");
+        DcMotorEx shooterMotor = hardwareMap.get(DcMotorEx.class, "shooter1Motor");
+        DcMotorEx shooter2Motor = hardwareMap.get(DcMotorEx.class, "shooter2Motor");
         double power = 1.0;
 
         waitForStart();
@@ -22,8 +23,9 @@ public class MiniShooterTest extends LinearOpMode {
             if (gamepad1.dpad_up) power += 0.002;
 
             shooterMotor.setPower(power);
+            shooter2Motor.setPower(power);
 
-            telemetry.addData("Powerx1000", power * 1000.0);
+            telemetry.addData("Power", power);
             telemetry.addData("Speed", shooterMotor.getVelocity());
             telemetry.update();
         }
