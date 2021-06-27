@@ -1,6 +1,8 @@
 package org.firstinspires.ftc.teamcode.main;
 
+import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
+import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.roadrunner.control.PIDFController;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
@@ -24,9 +26,10 @@ import static org.firstinspires.ftc.teamcode.drive.DriveConstants.kV;
 @TeleOp
 public class TeleOpFinal extends LinearOpMode {
     public static Vector2d GOAL_POSITION = new Vector2d(76.0, 36.0);
-    public static double K_TURN = 0.4;
-    public static double K_TRANSLATION = 0.5;
-    public static Pose2d CALIBRATION_POSE = new Pose2d(-63.5, 63.5, Math.PI);
+    public static double K_TURN = 0.2;
+    public static double K_TRANSLATION = 0.3;
+    public static double K_BASE = 0.03;
+    public static Pose2d CALIBRATION_POSE = new Pose2d(-63.5, 63.5, 0.0);
 
     private PIDFController headingController = new PIDFController(SampleMecanumDrive.HEADING_PID);
 
@@ -36,11 +39,13 @@ public class TeleOpFinal extends LinearOpMode {
     private AutonomousAiming aim;
 
     private double controlScale(double x, double k) {
-        return (1.0 - k) * Math.pow(x, 9) + k * x;
+        return (1 - K_BASE) * ((1.0 - k) * Math.pow(x, 9) + k * x) + Math.signum(x) * K_BASE;
     }
 
     @Override
     public void runOpMode() {
+        telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
+
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
         drive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         drive.setPoseEstimate(PoseStorage.pose);
@@ -48,8 +53,8 @@ public class TeleOpFinal extends LinearOpMode {
         headingController.setInputBounds(-Math.PI, Math.PI);
 
         wobbleArm = new WobbleArm(hardwareMap);
-        shooter = new Shooter(hardwareMap, drive);
         intake = new Intake(hardwareMap);
+        shooter = new Shooter(hardwareMap, intake);
 
         aim = new AutonomousAiming(hardwareMap, drive, shooter);
 
@@ -82,19 +87,14 @@ public class TeleOpFinal extends LinearOpMode {
             Pose2d poseEstimate = drive.getPoseEstimate();
             Pose2d velocityEstimate = drive.getPoseVelocity();
 
-            telemetry.addData("x", poseEstimate.getX());
-            telemetry.addData("y", poseEstimate.getY());
-            telemetry.addData("heading", poseEstimate.getHeading());
-            telemetry.update();
-
             Vector2d gamepadDirection = new Vector2d(-gamepad1.left_stick_y, -gamepad1.right_stick_x);
+                    //.rotated(-poseEstimate.getHeading() - Math.PI / 2);
             double gamepadNorm = gamepadDirection.norm();
             Vector2d movementVector = gamepadNorm != 0.0
                     ? gamepadDirection.times(controlScale(gamepadNorm, K_TRANSLATION) / gamepadNorm)
                     : new Vector2d(0.0, 0.0);
 
-            double scaleFactor = gamepad1.left_bumper ? 0.4
-                    : wobbleArm.getArmPosition() == WobbleArm.ArmPosition.PICKUP ? 0.5
+            double scaleFactor = wobbleArm.getArmPosition() == WobbleArm.ArmPosition.PICKUP ? 0.5
                     : 1.0;
 
             double omegaCorrection = 0.0;
@@ -158,12 +158,14 @@ public class TeleOpFinal extends LinearOpMode {
             }
 
             if (gamepad1.right_trigger > 0.0 && aim.getState() == AutonomousAiming.State.OFF) {
+                intake.stop();
                 aim.startHighGoal();
             }
 
-            if (gamepad1.left_trigger > 0.0 && shooter.getState() != Shooter.State.FIRING) {
-                shooter.fire(1);
-            }
+//            if (gamepad1.left_trigger > 0.0 && shooter.getState() != Shooter.State.FIRING) {
+//                intake.stop();
+//                shooter.fire(1);
+//            }
 
             if (gamepad1.right_bumper && !hasRBBeenPressed) {
                 if (intake.getState() == Intake.State.OFF) {
@@ -175,6 +177,7 @@ public class TeleOpFinal extends LinearOpMode {
             }
 
             if (gamepad1.left_bumper && !hasLBBeenPressed) {
+                shooter.stop();
                 if (intake.getState() == Intake.State.OFF) {
                     intake.startOut();
                 } else {
@@ -182,9 +185,9 @@ public class TeleOpFinal extends LinearOpMode {
                 }
             }
 
-//            if (gamepad1.dpad_down) {
-//                drive.setPoseEstimate(CALIBRATION_POSE);
-//            }
+            if (gamepad1.dpad_up) {
+                drive.setPoseEstimate(CALIBRATION_POSE);
+            }
 
             if (gamepad1.dpad_down && !isDpadDownDown) {
                 if (intake.isStackArmOut()) {
