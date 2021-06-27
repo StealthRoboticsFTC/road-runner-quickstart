@@ -80,8 +80,7 @@ public class TeleOpFinal extends LinearOpMode {
             if (aim.getState() == AutonomousAiming.State.AIMING_POWERSHOT || aim.getState() == AutonomousAiming.State.SHOOTING_POWERSHOT || aim.getState() == AutonomousAiming.State.WAITING_POWERSHOT) {
                 shooter.setFlapPosition(0.63);
             } else {
-                shooter.setFlapPosition(0.75);
-//                shooter.setFlapPosition(0.57);
+                shooter.setFlapPosition(0.57);
             }
 
             Pose2d poseEstimate = drive.getPoseEstimate();
@@ -162,10 +161,10 @@ public class TeleOpFinal extends LinearOpMode {
                 aim.startHighGoal();
             }
 
-//            if (gamepad1.left_trigger > 0.0 && shooter.getState() != Shooter.State.FIRING) {
-//                intake.stop();
-//                shooter.fire(1);
-//            }
+            if (gamepad1.dpad_left && shooter.getState() != Shooter.State.FIRING) {
+                intake.stop();
+                shooter.fire(1);
+            }
 
             if (gamepad1.right_bumper && !hasRBBeenPressed) {
                 if (intake.getState() == Intake.State.OFF) {

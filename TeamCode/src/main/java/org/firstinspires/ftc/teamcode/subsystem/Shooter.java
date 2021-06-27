@@ -19,10 +19,7 @@ public class Shooter {
     }
 
     public static double MAX_VELOCITY = 2500;
-//    public static double TARGET_VELOCITY = MAX_VELOCITY * 0.58;
-
-
-    public static double TARGET_VELOCITY = MAX_VELOCITY * 0.9;
+    public static double TARGET_VELOCITY = MAX_VELOCITY * 0.58;
 
     public static double TARGET_POWERSHOT_VELOCITY = MAX_VELOCITY * 0.5;
 
