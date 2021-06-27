@@ -41,15 +41,14 @@ public class LocalizationTest extends LinearOpMode {
 
             drive.update();
 
-            double thonkedHeading = Angle.norm(StandardTrackingWheelLocalizer.encoderTicksToInches(
-                    (leftEncoder.getCurrentPosition() + rightEncoder.getCurrentPosition()) /
-                            StandardTrackingWheelLocalizer.LATERAL_DISTANCE));
+            if (gamepad1.a) {
+                drive.setPoseEstimate(new Pose2d());
+            }
 
             Pose2d poseEstimate = drive.getPoseEstimate();
             telemetry.addData("x", poseEstimate.getX());
             telemetry.addData("y", poseEstimate.getY());
             telemetry.addData("heading", poseEstimate.getHeading());
-            telemetry.addData("thonked-heading", thonkedHeading);
             telemetry.update();
         }
     }

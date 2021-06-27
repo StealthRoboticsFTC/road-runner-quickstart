@@ -95,18 +95,18 @@ class UGContourRingPipeline(
         var upperOrange = Scalar(255.0, 230.0, 95.0)
 
         /** width of the camera in use, defaulted to 320 as that is most common in examples **/
-        var CAMERA_WIDTH = 320
+        var CAMERA_WIDTH = 240
 
         /** Horizon value in use, anything above this value (less than the value) since
          * (0, 0) is the top left of the camera frame **/
-        var HORIZON: Int = ((100.0 / 320.0) * CAMERA_WIDTH).toInt()
+        var HORIZON: Int = 120
 
         /** algorithmically calculated minimum width for width check based on camera width **/
         val MIN_WIDTH
-            get() = (30.0 / 320.0) * CAMERA_WIDTH
+            get() = 50
 
         /** if the calculated aspect ratio is greater then this, height is 4, otherwise its 1 **/
-        const val BOUND_RATIO = 0.7
+        const val BOUND_RATIO = 0.4
     }
 
     /**
@@ -153,9 +153,9 @@ class UGContourRingPipeline(
                 val copy = MatOfPoint2f(*c.toArray())
                 val rect: Rect = Imgproc.boundingRect(copy)
 
-                val w = rect.width
+                val w = rect.height
                 // checking if the rectangle is below the horizon
-                if (w > maxWidth && rect.y + rect.height > HORIZON) {
+                if (w > maxWidth && rect.x + rect.width > HORIZON) {
                     maxWidth = w
                     maxRect = rect
                 }
@@ -170,12 +170,12 @@ class UGContourRingPipeline(
             Imgproc.line(
                     ret,
                     Point(
-                            .0,
-                            HORIZON.toDouble()
+                            HORIZON.toDouble(),
+                            .0
                     ),
                     Point(
+                            HORIZON.toDouble(),
                             CAMERA_WIDTH.toDouble(),
-                            HORIZON.toDouble()
                     ),
                     Scalar(
                             255.0,
@@ -191,7 +191,7 @@ class UGContourRingPipeline(
              * height = maxWidth >= MIN_WIDTH ? aspectRatio > BOUND_RATIO ? FOUR : ONE : ZERO
              **/
             height = if (maxWidth >= MIN_WIDTH) {
-                val aspectRatio: Double = maxRect.height.toDouble() / maxRect.width.toDouble()
+                val aspectRatio: Double = maxRect.width.toDouble() / maxRect.height.toDouble()
 
                 if(debug) telemetry?.addData("Vision: Aspect Ratio", aspectRatio)
 

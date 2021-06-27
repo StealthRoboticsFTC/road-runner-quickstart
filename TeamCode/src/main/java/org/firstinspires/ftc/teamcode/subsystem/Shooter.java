@@ -18,36 +18,36 @@ public class Shooter {
         FIRING
     }
 
-    public static PIDCoefficients VELOCITY_PID = new PIDCoefficients(3, 0, 0.0);
-    public static double kV = 1.0;
-    public static double kS = 0.0;
+    public static double MAX_VELOCITY = 2500;
+//    public static double TARGET_VELOCITY = MAX_VELOCITY * 0.58;
 
-    public static double MAX_VELOCITY = 2300.0;
-    public static double TARGET_VELOCITY = MAX_VELOCITY * 0.93;
-    public static double TARGET_POWERSHOT_VELOCITY = MAX_VELOCITY * 0.86;
+
+    public static double TARGET_VELOCITY = MAX_VELOCITY * 0.9;
+
+    public static double TARGET_POWERSHOT_VELOCITY = MAX_VELOCITY * 0.5;
+
+    public static PIDCoefficients VELOCITY_PID = new PIDCoefficients(22, 0, 0);
+    public static double kS = 0.1 * MAX_VELOCITY;
+    public static double kV = 1.0 - (kS / MAX_VELOCITY);
 
     public static double SHOOTER_STOP_POWER = 0.0;
-    public static double RAMP_UP_TIME = 0.25;
+//    public static double MAX_ACCEL = 1700;
+    public static double MAX_ACCEL = 1500;
+    public static double RAMP_UP_FINALIZE_TIME = 0.4;
 
-    public static double OUT_ARM_POSITION = 0.0;
-    public static double IN_ARM_POSITION = 0.12;
+    public static double OUT_ARM_POSITION = 0.82;
+    public static double IN_ARM_POSITION = 0.69;
     public static double ARM_OUT_TIME = 0.1;
-    public static double ARM_IN_TIME = 0.63;
-
-    public static double CONVEYOR_MOVING_POWER = 0.87;
-    public static double CONVEYOR_STOP_POWER = 0.0;
+    public static double ARM_IN_TIME = 0.24;
 
     public static Vector2d GOAL_POSITION = new Vector2d(124, 106);
-
-    private HardwareMap hardwareMap;
 
     private DcMotorEx frontShooter;
     private DcMotorEx backShooter;
     private Servo shooterArm;
     private Servo shooterFlap;
-    private CRServo conveyor;
 
-    private SampleMecanumDrive drive;
+    private Intake intake;
 
     private PIDFController velocityController;
 
@@ -56,20 +56,19 @@ public class Shooter {
     private ElapsedTime armWaitTime = new ElapsedTime();
     private ElapsedTime rampTime = new ElapsedTime();
 
+    private double startVelocity = 0;
     private double targetVelocity = TARGET_VELOCITY;
     private int shotsRemaining = 0;
     private boolean armIsIn = true;
 
     private Shooter() {}
 
-    public Shooter(HardwareMap hardwareMap, SampleMecanumDrive drive) {
-        this.hardwareMap = hardwareMap;
+    public Shooter(HardwareMap hardwareMap, Intake intake) {
         this.frontShooter = hardwareMap.get(DcMotorEx.class, "frontShooter");
         this.backShooter = hardwareMap.get(DcMotorEx.class, "backShooter");
         this.shooterArm = hardwareMap.get(Servo.class, "shooterArm");
         this.shooterFlap = hardwareMap.get(Servo.class, "shooterFlap");
-        this.conveyor = hardwareMap.get(CRServo.class, "conveyor");
-        this.drive = drive;
+        this.intake = intake;
         this.velocityController = new PIDFController(VELOCITY_PID, kV, 0.0, kS);
         this.stop();
         this.moveArmIn();
@@ -85,9 +84,11 @@ public class Shooter {
             case OFF:
                 break;
             case RAMP_UP:
-                double currVelocity = (targetVelocity / RAMP_UP_TIME) * rampTime.seconds();
-                setVelocity(currVelocity);
-                if (rampTime.seconds() > RAMP_UP_TIME) {
+                double dv = targetVelocity - startVelocity;
+                double baseTime = Math.abs(dv) / MAX_ACCEL;
+                double t = Math.min(Math.abs(rampTime.seconds() / baseTime), 1);
+                setVelocity(dv * t + startVelocity);
+                if (rampTime.seconds() > baseTime + RAMP_UP_FINALIZE_TIME) {
                     state = State.RUNNING;
                     setVelocity(targetVelocity);
                 }
@@ -108,7 +109,6 @@ public class Shooter {
                     moveArmIn();
                 }
             case RUNNING:
-                updateFlap();
                 break;
         }
     }
@@ -119,12 +119,13 @@ public class Shooter {
 
     // TODO: revert publics?
     public void setVelocity(double velocity) {
-        velocityController.setTargetPosition(velocity);
-        velocityController.setTargetVelocity(velocity);
+        double vel = Math.round(Math.min(velocity, targetVelocity) / 20.0) * 20.0;
+        velocityController.setTargetPosition(vel);
+        velocityController.setTargetVelocity(vel);
     }
 
     public double getVelocity() {
-        return backShooter.getVelocity();
+        return frontShooter.getVelocity();
     }
 
     public void setPower(double power) {
@@ -134,27 +135,32 @@ public class Shooter {
 
     public void startRampUp() {
         rampTime.reset();
-        conveyor.setPower(CONVEYOR_MOVING_POWER);
         targetVelocity = TARGET_VELOCITY;
+        startVelocity = getVelocity();
         state = State.RAMP_UP;
     }
 
     public void startPowershotRampUp() {
         rampTime.reset();
-        conveyor.setPower(CONVEYOR_MOVING_POWER);
         targetVelocity = TARGET_POWERSHOT_VELOCITY;
+        startVelocity = getVelocity();
         state = State.RAMP_UP;
     }
 
     public void stop() {
         setPower(SHOOTER_STOP_POWER);
-        conveyor.setPower(CONVEYOR_STOP_POWER);
         moveArmIn();
+        if (!intake.isStackArmOut()) {
+            intake.moveStackArmIn();
+        }
         state = State.OFF;
     }
 
     public void fire(int shotsToFire) {
         if (state == State.RUNNING) {
+            if (!intake.isStackArmOut()) {
+                intake.moveStackArmShoot();
+            }
             moveArmOut();
             shotsRemaining = shotsToFire;
             armWaitTime.reset();
@@ -172,10 +178,7 @@ public class Shooter {
         armIsIn = false;
     }
 
-    private void updateFlap() {
-//        double distance = drive.getPoseEstimate().vec().minus(GOAL_POSITION).norm();
-//        double flapPosition = flapPositionTable.get(distance);
-//        shooterFlap.setPosition(flapPosition);
+    public void setFlapPosition(double position) {
+        shooterFlap.setPosition(position);
     }
-
 }

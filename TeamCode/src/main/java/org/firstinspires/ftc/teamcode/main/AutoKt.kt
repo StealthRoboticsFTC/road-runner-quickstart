@@ -14,6 +14,7 @@ import com.qualcomm.robotcore.util.ElapsedTime
 import org.firstinspires.ftc.teamcode.drive.DriveConstants.MAX_ACCEL
 import org.firstinspires.ftc.teamcode.drive.DriveConstants.TRACK_WIDTH
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive
+import org.firstinspires.ftc.teamcode.subsystem.Intake
 import org.firstinspires.ftc.teamcode.subsystem.Shooter
 import org.firstinspires.ftc.teamcode.subsystem.WobbleArm
 import org.firstinspires.ftc.teamcode.vision.UGContourRingDetector
@@ -133,7 +134,8 @@ class AutoKt: LinearOpMode() {
     override fun runOpMode() {
         drive = SampleMecanumDrive(hardwareMap)
         arm = WobbleArm(hardwareMap)
-        shooter = Shooter(hardwareMap, drive)
+        val intake = Intake(hardwareMap)
+        shooter = Shooter(hardwareMap, intake)
         arm.gripClose()
 
         val detector = UGContourRingDetector(hardwareMap, "webcam", telemetry, true)

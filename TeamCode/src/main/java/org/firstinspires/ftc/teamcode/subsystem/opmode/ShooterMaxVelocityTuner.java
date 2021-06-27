@@ -4,6 +4,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
+import org.firstinspires.ftc.teamcode.subsystem.Intake;
 import org.firstinspires.ftc.teamcode.subsystem.Shooter;
 
 @Autonomous
@@ -11,7 +12,8 @@ public class ShooterMaxVelocityTuner extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
-        Shooter shooter = new Shooter(hardwareMap, drive);
+        Intake intake = new Intake(hardwareMap);
+        Shooter shooter = new Shooter(hardwareMap, intake);
 
         waitForStart();
 

@@ -69,6 +69,16 @@ public class TeleOpFinal extends LinearOpMode {
             shooter.update();
             aim.update();
 
+            telemetry.addData("flyvelo", shooter.getVelocity());
+            telemetry.update();
+
+            if (aim.getState() == AutonomousAiming.State.AIMING_POWERSHOT || aim.getState() == AutonomousAiming.State.SHOOTING_POWERSHOT || aim.getState() == AutonomousAiming.State.WAITING_POWERSHOT) {
+                shooter.setFlapPosition(0.63);
+            } else {
+                shooter.setFlapPosition(0.75);
+//                shooter.setFlapPosition(0.57);
+            }
+
             Pose2d poseEstimate = drive.getPoseEstimate();
             Pose2d velocityEstimate = drive.getPoseVelocity();
 
@@ -157,6 +167,7 @@ public class TeleOpFinal extends LinearOpMode {
 
             if (gamepad1.right_bumper && !hasRBBeenPressed) {
                 if (intake.getState() == Intake.State.OFF) {
+                    shooter.stop();
                     intake.startIn();
                 } else {
                     intake.stop();

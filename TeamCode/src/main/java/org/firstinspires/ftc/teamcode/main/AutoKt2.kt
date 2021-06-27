@@ -69,7 +69,7 @@ class AutoKt2: LinearOpMode() {
         val list = mutableListOf<Trajectory>()
 
         val builder1 = drive.trajectoryBuilder(startPose)
-                .splineTo(Vector2d(-3.0, 12.0), 355.0.toRadians)
+                .splineTo(Vector2d(-5.0, 12.0), 356.0.toRadians)
                 .addTemporalMarker(1.0, -1.0, shooter::startPowershotRampUp)
         list.add(builder1.build())
 
@@ -87,7 +87,7 @@ class AutoKt2: LinearOpMode() {
                 .splineTo(Vector2d(-10.0, 36.0), 180.0.toRadians)
                 .addDisplacementMarker(intake::startIn)
 //                .splineTo(Vector2d(-26.0, 36.0), 180.0.toRadians)
-                .splineTo(Vector2d(-26.0, 36.0), 180.0.toRadians, intakeVelConstraint, accelConstraint)
+                .splineTo(Vector2d(-17.0, 36.0), 180.0.toRadians, intakeVelConstraint, accelConstraint)
         list.add(builder3.build())
 
 //        val builder4 = drive.trajectoryBuilder(list[list.size - 1].end())
@@ -111,9 +111,9 @@ class AutoKt2: LinearOpMode() {
 
         val builder7 = drive.trajectoryBuilder(list[list.size - 1].end(), true)
                 .addTemporalMarker(0.2, shooter::stop)
-                .splineTo(Vector2d(-30.0, 36.0), 180.0.toRadians)
+                .splineTo(Vector2d(-16.0, 36.0), 180.0.toRadians)
                 .addDisplacementMarker(intake::startIn)
-                .splineTo(Vector2d(-36.0, 36.0), 180.0.toRadians, intakeVelConstraint, accelConstraint)
+                .splineTo(Vector2d(-34.0, 36.0), 180.0.toRadians, intakeVelConstraint, accelConstraint)
         list.add(builder7.build())
 
         val builder8 = drive.trajectoryBuilder(list[list.size - 1].end())
@@ -125,13 +125,13 @@ class AutoKt2: LinearOpMode() {
         val builder9 = drive.trajectoryBuilder(list[list.size - 1].end(), 110.0.toRadians)
                 .addTemporalMarker(0.2, shooter::stop)
                 .addTemporalMarker(1.0, arm::moveToPickup)
-                .splineToSplineHeading(Pose2d(-28.0, 51.0, 180.0.toRadians - EPSILON), 180.0.toRadians)
-                .splineTo(Vector2d(-38.0, 51.0), 180.0.toRadians, slowVelConstraint, accelConstraint)
+                .splineToSplineHeading(Pose2d(-28.0, 53.5, 180.0.toRadians - EPSILON), 180.0.toRadians)
+                .splineTo(Vector2d(-38.0, 53.5), 180.0.toRadians, slowVelConstraint, accelConstraint)
                 .addTemporalMarker(1.0, -0.3, arm::gripClose)
         list.add(builder9.build())
 
         val builder10 = drive.trajectoryBuilder(list[list.size - 1].end(), true)
-                .splineToSplineHeading(Pose2d(-22.0, 51.0, 0.0.toRadians - 2.0 * EPSILON), 0.0.toRadians)
+                .splineToSplineHeading(Pose2d(-22.0, 53.5, 0.0.toRadians - 2.0 * EPSILON), 0.0.toRadians)
                 .splineTo(Vector2d(39.0, 56.0), 5.0.toRadians)
                 .addTemporalMarker(1.0, -1.5, arm::moveToDropOff)
                 .addDisplacementMarker(arm::gripOpen)
@@ -151,19 +151,19 @@ class AutoKt2: LinearOpMode() {
         while (shooter.state != Shooter.State.RUNNING && !isStopRequested) {
             update()
         }
-        turn(Angle.normDelta(355.0.toRadians - drive.poseEstimate.heading))
+        turn(Angle.normDelta(356.0.toRadians - drive.poseEstimate.heading))
         shooter.fire(1)
         while (shooter.state != Shooter.State.RUNNING && !isStopRequested) {
             update()
         }
         sleepUpdate(600)
-        turn(Angle.normDelta(1.0.toRadians - drive.poseEstimate.heading))
+        turn(Angle.normDelta(2.0.toRadians - drive.poseEstimate.heading))
         shooter.fire(1)
         while (shooter.state != Shooter.State.RUNNING && !isStopRequested) {
             update()
         }
         sleepUpdate(600)
-        turn(Angle.normDelta(7.0.toRadians - drive.poseEstimate.heading))
+        turn(Angle.normDelta(8.0.toRadians - drive.poseEstimate.heading))
         shooter.fire(1)
         while (shooter.state != Shooter.State.RUNNING && !isStopRequested) {
             update()
@@ -181,7 +181,7 @@ class AutoKt2: LinearOpMode() {
         while (shooter.state != Shooter.State.RUNNING && !isStopRequested) {
             update()
         }
-        shooter.fire(3)
+        shooter.fire(1)
         while (shooter.state != Shooter.State.RUNNING && !isStopRequested) {
             update()
         }
@@ -194,7 +194,7 @@ class AutoKt2: LinearOpMode() {
         while (shooter.state != Shooter.State.RUNNING && !isStopRequested) {
             update()
         }
-        shooter.fire(1)
+        shooter.fire(3)
         while (shooter.state != Shooter.State.RUNNING && !isStopRequested) {
             update()
         }
@@ -215,7 +215,7 @@ class AutoKt2: LinearOpMode() {
         val list = mutableListOf<Trajectory>()
 
         val builder1 = drive.trajectoryBuilder(startPose)
-                .splineTo(Vector2d(-3.0, 12.0), 355.0.toRadians)
+                .splineTo(Vector2d(-5.0, 12.0), 356.0.toRadians)
                 .addTemporalMarker(1.0, -1.0, shooter::startPowershotRampUp)
         list.add(builder1.build())
 
@@ -240,13 +240,13 @@ class AutoKt2: LinearOpMode() {
         val builder5 = drive.trajectoryBuilder(list[list.size - 1].end(), 120.0.toRadians)
                 .addTemporalMarker(0.2, shooter::stop)
                 .addTemporalMarker(1.0, arm::moveToPickup)
-                .splineToSplineHeading(Pose2d(-28.0, 51.0, 180.0.toRadians - EPSILON), 180.0.toRadians)
-                .splineTo(Vector2d(-36.0, 51.0), 180.0.toRadians, slowVelConstraint, accelConstraint)
+                .splineToSplineHeading(Pose2d(-28.0, 53.5, 180.0.toRadians - EPSILON), 180.0.toRadians)
+                .splineTo(Vector2d(-36.0, 53.5), 180.0.toRadians, slowVelConstraint, accelConstraint)
                 .addTemporalMarker(1.0, -0.3, arm::gripClose)
         list.add(builder5.build())
 
         val builder6 = drive.trajectoryBuilder(list[list.size - 1].end(), true)
-                .splineToSplineHeading(Pose2d(-22.0, 51.0, 0.0.toRadians - 2.0 * EPSILON), 0.0.toRadians)
+                .splineToSplineHeading(Pose2d(-22.0, 53.5, 0.0.toRadians - 2.0 * EPSILON), 0.0.toRadians)
                 .splineTo(Vector2d(14.0, 39.0), 0.0.toRadians)
                 .addTemporalMarker(1.0, -1.5, arm::moveToDropOff)
                 .addDisplacementMarker(arm::gripOpen)
@@ -266,19 +266,19 @@ class AutoKt2: LinearOpMode() {
         while (shooter.state != Shooter.State.RUNNING && !isStopRequested) {
             update()
         }
-        turn(Angle.normDelta(355.0.toRadians - drive.poseEstimate.heading))
+        turn(Angle.normDelta(356.0.toRadians - drive.poseEstimate.heading))
         shooter.fire(1)
         while (shooter.state != Shooter.State.RUNNING && !isStopRequested) {
             update()
         }
         sleepUpdate(600)
-        turn(Angle.normDelta(1.0.toRadians - drive.poseEstimate.heading))
+        turn(Angle.normDelta(2.0.toRadians - drive.poseEstimate.heading))
         shooter.fire(1)
         while (shooter.state != Shooter.State.RUNNING && !isStopRequested) {
             update()
         }
         sleepUpdate(600)
-        turn(Angle.normDelta(7.0.toRadians - drive.poseEstimate.heading))
+        turn(Angle.normDelta(8.0.toRadians - drive.poseEstimate.heading))
         shooter.fire(1)
         while (shooter.state != Shooter.State.RUNNING && !isStopRequested) {
             update()
@@ -312,7 +312,7 @@ class AutoKt2: LinearOpMode() {
         val list = mutableListOf<Trajectory>()
 
         val builder1 = drive.trajectoryBuilder(startPose)
-                .splineTo(Vector2d(-3.0, 12.0), 355.0.toRadians)
+                .splineTo(Vector2d(-5.0, 12.0), 356.0.toRadians)
                 .addTemporalMarker(1.0, -1.0, shooter::startPowershotRampUp)
         list.add(builder1.build())
 
@@ -326,8 +326,8 @@ class AutoKt2: LinearOpMode() {
         val builder3 = drive.trajectoryBuilder(list[list.size - 1].end(), true)
                 .addTemporalMarker(0.2, shooter::stop)
                 .addTemporalMarker(1.0, arm::moveToPickup)
-                .splineToSplineHeading(Pose2d(-28.0, 52.0, 180.0.toRadians - EPSILON), 180.0.toRadians)
-                .splineTo(Vector2d(-36.0, 52.0), 180.0.toRadians, slowVelConstraint, accelConstraint)
+                .splineToSplineHeading(Pose2d(-28.0, 54.5, 180.0.toRadians - EPSILON), 180.0.toRadians)
+                .splineTo(Vector2d(-36.0, 54.5), 180.0.toRadians, slowVelConstraint, accelConstraint)
                 .addTemporalMarker(1.0, -0.3, arm::gripClose)
         list.add(builder3.build())
 
@@ -339,7 +339,7 @@ class AutoKt2: LinearOpMode() {
 
         val builder5 = drive.trajectoryBuilder(list[list.size - 1].end(), 240.0.toRadians)
                 .addTemporalMarker(1.0, arm::moveToInitial)
-                .splineToConstantHeading(Vector2d(10.0, 36.0), 180.0.toRadians)
+                .splineToConstantHeading(Vector2d(10.0, 36.0), 0.0.toRadians)
         list.add(builder5.build())
 
         return list
@@ -351,19 +351,19 @@ class AutoKt2: LinearOpMode() {
         while (shooter.state != Shooter.State.RUNNING && !isStopRequested) {
             update()
         }
-        turn(Angle.normDelta(355.0.toRadians - drive.poseEstimate.heading))
+        turn(Angle.normDelta(356.0.toRadians - drive.poseEstimate.heading))
         shooter.fire(1)
         while (shooter.state != Shooter.State.RUNNING && !isStopRequested) {
             update()
         }
         sleepUpdate(600)
-        turn(Angle.normDelta(1.0.toRadians - drive.poseEstimate.heading))
+        turn(Angle.normDelta(2.0.toRadians - drive.poseEstimate.heading))
         shooter.fire(1)
         while (shooter.state != Shooter.State.RUNNING && !isStopRequested) {
             update()
         }
         sleepUpdate(600)
-        turn(Angle.normDelta(7.0.toRadians - drive.poseEstimate.heading))
+        turn(Angle.normDelta(8.0.toRadians - drive.poseEstimate.heading))
         shooter.fire(1)
         while (shooter.state != Shooter.State.RUNNING && !isStopRequested) {
             update()
@@ -383,8 +383,8 @@ class AutoKt2: LinearOpMode() {
     override fun runOpMode() {
         drive = SampleMecanumDrive(hardwareMap)
         arm = WobbleArm(hardwareMap)
-        shooter = Shooter(hardwareMap, drive)
         intake = Intake(hardwareMap)
+        shooter = Shooter(hardwareMap, intake)
 //        aiming = AutonomousAiming(hardwareMap, drive, shooter)
 
         arm.gripClose()
@@ -415,5 +415,7 @@ class AutoKt2: LinearOpMode() {
         }
 
         PoseStorage.pose = drive.poseEstimate
+
+        sleepUpdate(1000)
     }
 }

@@ -13,18 +13,18 @@ public class WobbleArm {
         PICKUP
     }
 
-    public static double ARM_INITIAL_POSITION = 0.34;
-    public static double ARM_CARRY_POSITION = 0.5;
-    public static double ARM_DROPOFF_POSITION = 0.6;
-    public static double ARM_PICKUP_POSITION = 0.685;
-    public static double GRIP_OPEN_POSITION=0.6;
-    public static double GRIP_CLOSE_POSITION=0.175;
+    public static double ARM_INITIAL_POSITION = 0.54;
+    public static double ARM_CARRY_POSITION = 0.52;
+    public static double ARM_DROPOFF_POSITION = 0.49;
+    public static double ARM_PICKUP_POSITION = 0.457;
+    public static double GRIP_OPEN_POSITION=0.5;
+    public static double GRIP_CLOSE_POSITION=0.19;
 
     private Servo arm;
     private Servo pincher;
     private HardwareMap hardwareMap;
     private ArmPosition armPosition;
-    private boolean gripOpen;
+    private boolean gripOpen = false;
 
     private WobbleArm() {}
 
@@ -32,7 +32,7 @@ public class WobbleArm {
         this.hardwareMap = hardwareMap;
         this.arm = hardwareMap.get(Servo.class, "arm");
         this.pincher = hardwareMap.get(Servo.class, "pincher");
-        this.gripOpen();
+        this.gripClose();
         this.moveToInitial();
     }
 

@@ -39,6 +39,7 @@ import com.qualcomm.robotcore.hardware.configuration.typecontainers.MotorConfigu
 
 import org.firstinspires.ftc.teamcode.util.DashboardUtil;
 import org.firstinspires.ftc.teamcode.util.LynxModuleUtil;
+import org.firstinspires.ftc.teamcode.util.ModifiedPIDFController;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -62,8 +63,8 @@ import static org.firstinspires.ftc.teamcode.drive.DriveConstants.kV;
  */
 @Config
 public class SampleMecanumDrive extends MecanumDrive {
-    public static PIDCoefficients TRANSLATIONAL_PID = new PIDCoefficients(8, 0, 0.3);
-    public static PIDCoefficients HEADING_PID = new PIDCoefficients(8, 0, 0.3);
+    public static PIDCoefficients TRANSLATIONAL_PID = new PIDCoefficients(20, 0, 0.6);
+    public static PIDCoefficients HEADING_PID = new PIDCoefficients(8, 0, 0.2);
 
     public static double LATERAL_MULTIPLIER = 1;
 
@@ -84,7 +85,7 @@ public class SampleMecanumDrive extends MecanumDrive {
 
     private Mode mode;
 
-    private PIDFController turnController;
+    private ModifiedPIDFController turnController;
     private MotionProfile turnProfile;
     private double turnStart;
 
@@ -112,7 +113,8 @@ public class SampleMecanumDrive extends MecanumDrive {
 
         mode = Mode.IDLE;
 
-        turnController = new PIDFController(HEADING_PID);
+        turnController = new ModifiedPIDFController(
+                new PIDCoefficients(HEADING_PID.kP, 1, HEADING_PID.kD), Math.toDegrees(1.0));
         turnController.setInputBounds(0, 2 * Math.PI);
 
         velConstraint = new MinVelocityConstraint(Arrays.asList(
@@ -261,7 +263,7 @@ public class SampleMecanumDrive extends MecanumDrive {
             case TURN: {
                 double t = clock.seconds() - turnStart;
                 boolean isProfileComplete = t >= turnProfile.duration();
-                double correctionFactor = isProfileComplete ? 0.7 : 1.0;
+                double correctionFactor = isProfileComplete ? 0.7 : 0.9;
 
                 MotionState targetState = turnProfile.get(t);
 
@@ -278,7 +280,7 @@ public class SampleMecanumDrive extends MecanumDrive {
                 setDriveSignal(new DriveSignal(new Pose2d(
                         0, 0, targetOmega + correction * correctionFactor
                 ), new Pose2d(
-                        0, 0, 0 //REMOVED targetOmega due to overshoot instability on small turns
+                        0, 0, 0 //REMOVED targetAlpha due to overshoot instability on small turns
                 )));
 
                 Pose2d newPose = lastPoseOnTurn.copy(lastPoseOnTurn.getX(), lastPoseOnTurn.getY(), targetState.getX());
@@ -286,10 +288,9 @@ public class SampleMecanumDrive extends MecanumDrive {
                 fieldOverlay.setStroke("#4CAF50");
                 DashboardUtil.drawRobot(fieldOverlay, newPose);
 
-                packet.put("err", turnController.getLastError());
-
-                if (t >= turnProfile.duration() + 1.0 || (t >= turnProfile.duration() + 0.2
-                        && Math.abs(Angle.normDelta(currentPose.getHeading() - targetState.getX())) < Math.toRadians(0.5))) {
+                if (t >= turnProfile.duration() + 1.0 || (t >= turnProfile.duration() + 0.3
+                        && Math.abs(Angle.normDelta(currentPose.getHeading() - targetState.getX())) < Math.toRadians(0.2
+                ))) {
                     mode = Mode.IDLE;
                     setDriveSignal(new DriveSignal());
                 }

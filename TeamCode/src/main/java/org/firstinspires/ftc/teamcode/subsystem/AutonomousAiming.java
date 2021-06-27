@@ -54,18 +54,19 @@ public class AutonomousAiming {
     public static double GAIN = 1.0;
     public static double EXPOSURE = 0.12;
 
-    public static double TARGET = (320/2) - 10;
-    public static double AIMING_POWERSHOT_TOLERANCE = 6;
-    public static double AIMING_GOAL_TOLERANCE = 12;
+    public static double TARGET = 320/2;
+    public static double AIMING_POWERSHOT_TOLERANCE = 5;
+    public static double AIMING_GOAL_TOLERANCE = 7;
     public static double AIMING_DELTA_TOLERANCE = 4;
-    public static double MAX_SPEED = 0.5;
-    public static double MIN_SPEED = 0.05;
+    public static double MAX_POWERSHOT_SPEED = 0.6;
+    public static double MAX_GOAL_SPEED = 1.6;
+    public static double MIN_SPEED = 0.0;
 
-    public static double POWERSHOT_WAIT_TIME = 1.3;
+    public static double POWERSHOT_WAIT_TIME = 0.9;
 
     private AimingPipeline aiming = new AimingPipeline();
 
-    public static PIDCoefficients coefficients = new PIDCoefficients(0.012, 0.001,
+    public static PIDCoefficients coefficients = new PIDCoefficients(0.012, 0.008,
             0.0);
     private ModifiedPIDFController pidControl = new ModifiedPIDFController(coefficients, 20.0);
 
@@ -98,24 +99,27 @@ public class AutonomousAiming {
                 break;
             case AIMING_HIGH_GOAL:
                 currentX = aiming.getGoalCenterX();
-                if(Math.abs(currentX - TARGET) < AIMING_GOAL_TOLERANCE && shooter.getState() == Shooter.State.RUNNING) {
+                if (Math.abs(currentX - TARGET) < AIMING_GOAL_TOLERANCE) {
                     lastXs.clear();
-                    shooter.fire(3);
                     drive.setDriveSignal(new DriveSignal());
                     pidControl.reset();
-                    state = State.SHOOTING_HIGH_GOAL;
+                    if (shooter.getState() == Shooter.State.RUNNING) {
+                        shooter.fire(3);
+                        state = State.SHOOTING_HIGH_GOAL;
+                    }
                 }
                 break;
             case AIMING_POWERSHOT:
                 currentX = aiming.getPowershotsCenterX()[currentPowershot];
                 if(Math.abs(currentX - TARGET) < AIMING_POWERSHOT_TOLERANCE
-                        && shooter.getState() == Shooter.State.RUNNING
                         && Math.abs(lastDelta) <= AIMING_DELTA_TOLERANCE) {
                     lastXs.clear();
-                    shooter.fire(1);
                     drive.setDriveSignal(new DriveSignal());
                     pidControl.reset();
-                    state = State.SHOOTING_POWERSHOT;
+                    if (shooter.getState() == Shooter.State.RUNNING) {
+                        shooter.fire(1);
+                        state = State.SHOOTING_POWERSHOT;
+                    }
                 }
                 break;
             case SHOOTING_HIGH_GOAL:
@@ -147,7 +151,11 @@ public class AutonomousAiming {
             lastDelta = (currentX - lastXs.getMean()) / lastXs.getCount();
             lastX = currentX;
             pidControl.setTargetPosition(TARGET);
-            pidControl.setOutputBounds(-MAX_SPEED, MAX_SPEED);
+            if (state == State.AIMING_HIGH_GOAL) {
+                pidControl.setOutputBounds(-MAX_GOAL_SPEED, MAX_GOAL_SPEED);
+            } else {
+                pidControl.setOutputBounds(-MAX_POWERSHOT_SPEED, MAX_POWERSHOT_SPEED);
+            }
             pidTimer.reset();
             double output = pidControl.update(currentX);
             DriveSignal driveSignal = new DriveSignal(new Pose2d(0, 0,
@@ -158,7 +166,9 @@ public class AutonomousAiming {
 
     public void startHighGoal() {
         state = State.AIMING_HIGH_GOAL;
-        shooter.startRampUp();
+        if (shooter.getState() != Shooter.State.RUNNING) {
+            shooter.startRampUp();
+        }
         lastXs.clear();
     }
 

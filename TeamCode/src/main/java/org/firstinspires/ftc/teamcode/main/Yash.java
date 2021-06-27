@@ -42,8 +42,8 @@ public class Yash extends LinearOpMode {
         headingController.setInputBounds(-Math.PI, Math.PI);
 
         wobbleArm = new WobbleArm(hardwareMap);
-        shooter = new Shooter(hardwareMap, drive);
         intake = new Intake(hardwareMap);
+        shooter = new Shooter(hardwareMap, intake);
 
         waitForStart();
 
